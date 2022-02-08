@@ -1,4 +1,4 @@
 # PONG-GAME
  
- >A simple Pong game using python & pygame.
+ >It is a simple Pong Game in Python using pygame.
 
