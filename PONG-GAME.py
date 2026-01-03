@@ -169,7 +169,7 @@ while True:
 	screen.blit(opponent_text, (600, 470))
 
 
-	#updating the gamme window
+	#updating the game window
 	pygame.display.flip()
 	clock.tick(75)
 
