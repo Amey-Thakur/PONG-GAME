@@ -28,8 +28,13 @@ jobs:
         run: |
           python -m pygbag --build "Source Code"
 
+      - name: Prepare for Deployment
+        run: |
+          mkdir -p dist
+          cp -r "Source Code/build/web/." dist/
+
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: Source Code/build/web
+          folder: dist
           branch: gh-pages
