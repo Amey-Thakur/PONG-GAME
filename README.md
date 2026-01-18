@@ -4,14 +4,13 @@
   # Pong Game
 
   [![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey)](LICENSE)
-  [![Status](https://img.shields.io/badge/Status-Completed-success)](https://github.com/Amey-Thakur/PONG-GAME)
-  [![Play Now](https://img.shields.io/badge/Play-NOW-blue?style=for-the-badge&logo=github)](https://amey-thakur.github.io/PONG-GAME/)
+  ![Status](https://img.shields.io/badge/Status-Completed-success)
+  [![Technology](https://img.shields.io/badge/Technology-Python%20%7C%20Pygame-blue)](https://github.com/Amey-Thakur/PONG-GAME)
+  [![Developed by Amey Thakur and Mega Satish](https://img.shields.io/badge/Developed%20by-Amey%20Thakur%20%26%20Mega%20Satish-blue.svg)](https://github.com/Amey-Thakur/PONG-GAME)
 
-  Start the Game: **[PONG GAME LIVE](https://amey-thakur.github.io/PONG-GAME/)**
+  A high-fidelity recreation of the foundational 1972 arcade classic, engineered with **Python** and optimized for seamless web execution.
 
-  A classic arcade implementation of Pong, engineered with **Pygame** and optimized for web execution via **Pygbag**.
-
-  **[Source Code](Source%20Code/)** &nbsp;·&nbsp; **[Play Online](https://amey-thakur.github.io/PONG-GAME/)** &nbsp;·&nbsp; **[Report Bug](https://github.com/Amey-Thakur/PONG-GAME/issues)**
+  **[Source Code](Source%20Code/)** &nbsp;·&nbsp; **[Technical Specification](Source%20Code/main.py)** &nbsp;·&nbsp; **[Live Demo](https://amey-thakur.github.io/PONG-GAME/)**
 
 </div>
 
@@ -19,9 +18,28 @@
 
 <div align="center">
 
-  [Overview](#overview) &nbsp;·&nbsp; [Controls](#controls) &nbsp;·&nbsp; [Tech Stack](#tech-stack) &nbsp;·&nbsp; [Code Structure](#code-structure) &nbsp;·&nbsp; [License](#license)
+  [Authors](#authors) &nbsp;·&nbsp; [Overview](#overview) &nbsp;·&nbsp; [Features](#features) &nbsp;·&nbsp; [Structure](#project-structure) &nbsp;·&nbsp; [Quick Start](#quick-start) &nbsp;·&nbsp; [Usage Guidelines](#usage-guidelines) &nbsp;·&nbsp; [License](#license) &nbsp;·&nbsp; [About](#about-this-repository) &nbsp;·&nbsp; [Acknowledgments](#acknowledgments)
 
 </div>
+
+---
+
+<!-- AUTHORS -->
+<div align="center">
+
+  <a name="authors"></a>
+  ## Authors
+
+  **Terna Engineering College | Computer Engineering | Batch of 2022**
+
+| <a href="https://github.com/Amey-Thakur"><img src="https://github.com/Amey-Thakur.png" width="150" height="150" alt="Amey Thakur"></a><br>[**Amey Thakur**](https://github.com/Amey-Thakur)<br><br>[![ORCID](https://img.shields.io/badge/ORCID-0000--0001--5644--1575-green.svg)](https://orcid.org/0000-0001-5644-1575) | <a href="https://github.com/msatmod"><img src="https://github.com/msatmod.png" width="150" height="150" alt="Mega Satish"></a><br>[**Mega Satish**](https://github.com/msatmod)<br><br>[![ORCID](https://img.shields.io/badge/ORCID-0000--0002--1844--9557-green.svg)](https://orcid.org/0000-0002-1844-9557) |
+| :---: | :---: |
+
+</div>
+
+> [!IMPORTANT]
+> ### 🤝🏻 Special Acknowledgement
+> *Special thanks to **[Mega Satish](https://github.com/msatmod)** for her meaningful contributions, guidance, and support that helped shape this work.*
 
 ---
 
@@ -29,56 +47,95 @@
 <a name="overview"></a>
 ## Overview
 
-**Pong Game** is a high-fidelity recreation of the 1972 tabular arcade game. This project serves as a study in game loop mechanics, collision detection physics, and state management using Python.
+**Pong Game** is a tabula-arcade simulation designed to demonstrate core game engine mechanics including collision physics, vector-based velocity, and AI tracking logic. The application serves as a digital study into early interactive system architecture, brought into a modern context via WebAssembly.
 
-### Key Features
-*   **Physics Engine**: Precise ball deflection and velocity adjustment based on paddle impact branding.
-*   **AI Opponent**: A reactive computer-controlled paddle that tracks ball positioning.
-*   **Procedural Audio**: Retro sound effects triggered by collision events.
-*   **WebAssembly**: Compiled to run natively in modern web browsers using **Pygbag**.
+### HMI Principles
+The development of this interface was guided by core **Human-Machine Interaction** paradigms:
+*   **Consistency**: The interface strictly adheres to the original 1972 spatial layout, exploiting the user's existing mental model of arcade physics to ensure intuitive interaction.
+*   **Direct Manipulation**: Paddle controls provide instantaneous response to input, creating a seamless loop between user intent and system action, critical for high-latency feedback environments.
 
----
-
-<!-- CONTROLS -->
-<a name="controls"></a>
-## Controls
-
-| Action | Player Input |
-| :--- | :--- |
-| **Move Up** | <kbd>⬆️ Up Arrow</kbd> |
-| **Move Down** | <kbd>⬇️ Down Arrow</kbd> |
-| **Start/Reset** | Automatic (Round Based) |
+> [!TIP]
+> **Feedback Loop Dynamics**
+>
+> The design utilizes high-contrast visual elements and distinct auditory triggers (`sfx_point`, `sfx_swooshing`) to invoke strong **Feedback Loops**. By providing immediate sensory confirmation for ball-paddle impacts and score events, the interface creates a robust **Visibility of System Status**, ensuring the user remains accurately oriented within the game state at all times.
 
 ---
 
-<!-- TECH STACK -->
-<a name="tech-stack"></a>
+<!-- FEATURES -->
+<a name="features"></a>
+## Features
+
+| Feature | Description |
+|---------|-------------|
+| **Elastic Physics** | High-precision collision detection using **Rect intersection logic** for authentic deflection. |
+| **Reactive AI** | An intelligent opponent paddle engineered with **velocity-tracking heuristics** for a scalable challenge. |
+| **Binaural Audio** | Event-driven auditory feedback system synchronized with **real-time physics triggers**. |
+| **Wasm Stack** | Efficient **WebAssembly compilation** via Pygbag, enabling native browser execution without plugins. |
+| **Binary Scoring** | Integrated score management system with visual persistence and round-start countdowns. |
+| **Adaptive Logic** | Asynchronous game loop architecture ensuring **non-blocking browser execution** and stability. |
+
+> [!NOTE]
+> ### Interactive Polish: The Velocity Singularity
+> We have engineered a **physics-driven state manager** that calibrates ball velocity across three distinct axes to simulate atmospheric drag and momentum transfer. During the initial countdown, the interface provides a **Visual Prep-State**, priming the user's cognitive reaction time before the primary game loop resumes. The visual language focuses on the minimalist "High-Contrast" aesthetic of early computing, ensuring maximum focus on the interactive trajectory. Complementing this experience, the application includes a high-fidelity performance summary, with a codebase digitally signed by **Amey & Mega**.
+
 ### Tech Stack
 - **Languages**: Python 3.11
-- **Engine**: **Pygame** (Rendering & Physics)
-- **Functions**: `ball_animation()`, `player_animation()`, `opponent_animation()`
-- **Deployment**: **Pygbag** (WebAssembly Compilation)
+- **Logic**: **Pygame Engine** (Asynchronous Loop & Physics Engine)
+- **Imaging**: **freesansbold.ttf** (Anti-aliased Raster Typography)
+- **UI System**: Premium Retro Graphics (Custom Python Canvas)
+- **Deployment**: GitHub Actions (Pygbag WebAssembly Pipeline)
 - **Hosting**: GitHub Pages
 
 ---
 
 <!-- STRUCTURE -->
-<a name="code-structure"></a>
-## Code Structure
+<a name="project-structure"></a>
+## Project Structure
 
 ```python
 PONG-GAME/
 │
-├── .github/
+├── .github/                         # Deployment & Automation Layer
 │   └── workflows/
-│       └── main.yml        # CI/CD Pipeline (Pygbag Build)
+│       └── main.yml                 # CI/CD Pipeline (Pygbag Build & Deploy)
 │
-├── Source Code/
-│   ├── sound/              # Audio Assets (WAV)
-│   └── main.py             # Core Game Logic (Entry Point)
+├── Source Code/                     # Primary Application Layer
+│   ├── sound/                       # Audio Assets (WAV)
+│   └── main.py                      # Core Game Logic (Asynchronous Entry Point)
 │
-└── README.md               # Documentation
+├── LICENSE                          # MIT License Terms
+├── README.md                        # Comprehensive Scholarly Entrance
+└── .gitignore                       # Repository Filters
 ```
+
+---
+
+<!-- QUICK START -->
+<a name="quick-start"></a>
+## Quick Start
+
+### 1. Prerequisites
+- **Browser**: Any modern WebAssembly-compliant browser (Chrome, Firefox, Edge, Safari).
+- **Python (Optional)**: Python 3.11+ (for local development).
+
+> [!WARNING]
+> **Local Execution**
+>
+> For local development, ensure that the `pygame` and `asyncio` libraries are correctly installed. Running the project locally may require `pygbag` for the full web-simulation experience.
+
+---
+
+<!-- USAGE -->
+<a name="usage-guidelines"></a>
+## Usage Guidelines
+
+This repository is openly shared to support learning and knowledge exchange across the academic community.
+
+**For Students**  
+Use this project as reference material for understanding game engine logic, asynchronous programming in Python, and Human Machine Interaction principles.
+
+**For Educators**  
+This project may serve as a practical lab example or supplementary teaching resource for Human Machine Interaction and Human Machine Interaction Laboratory courses (`CSC801` & `CSL801`).
 
 ---
 
@@ -86,11 +143,36 @@ PONG-GAME/
 <a name="license"></a>
 ## License
 
-This repository is available under the **MIT License**.
+This repository and all its creative and technical assets are made available under the **MIT License**. See the [LICENSE](LICENSE) file for complete terms.
 
-Copyright © 2022 **Amey Thakur**
+Copyright © 2022 Amey Thakur & Mega Satish
+
+---
+
+<!-- ABOUT -->
+<a name="about-this-repository"></a>
+## About This Repository
+
+**Created & Maintained by**: [Amey Thakur](https://github.com/Amey-Thakur) & [Mega Satish](https://github.com/msatmod)  
+**Academic Journey**: Bachelor of Engineering in Computer Engineering (2018-2022)  
+**Institution**: [Terna Engineering College](https://ternaengg.ac.in/), Navi Mumbai  
+
+This project features **The Pong Game**, developed as a **Human Machine Interaction** project during the **8th Semester Computer Engineering** curriculum.
+
+---
 
 <div align="center">
+
+  [↑ Back to Top](#readme-top)
+
+  [Authors](#authors) &nbsp;·&nbsp; [Overview](#overview) &nbsp;·&nbsp; [Features](#features) &nbsp;·&nbsp; [Structure](#project-structure) &nbsp;·&nbsp; [Quick Start](#quick-start) &nbsp;·&nbsp; [Usage Guidelines](#usage-guidelines) &nbsp;·&nbsp; [License](#license) &nbsp;·&nbsp; [About](#about-this-repository) &nbsp;·&nbsp; [Acknowledgments](#acknowledgments)
+
   <br>
-  👉🏻 <a href="https://github.com/Amey-Thakur"><strong>Back to Engineering</strong></a> 👈🏻
+
+  🔬 **[Human Machine Interaction Laboratory](https://github.com/Amey-Thakur/HUMAN-MACHINE-INTERACTION-AND-HUMAN-MACHINE-INTERACTION-LAB)** &nbsp; · &nbsp; 🏓 **[PONG-GAME](https://amey-thakur.github.io/PONG-GAME)**
+
+  ---
+
+  ### 🎓 [Computer Engineering Repository](https://github.com/Amey-Thakur/COMPUTER-ENGINEERING)
+
 </div>
