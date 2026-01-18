@@ -1,4 +1,4 @@
-import pygame, sys, random
+import pygame, sys, random, asyncio
 
 def ball_animation():
 	global ball_speed_x, ball_speed_y, player_score, opponent_score, score_time
@@ -80,8 +80,6 @@ def ball_start():
 		ball_speed_x = 7 * random.choice((1, -1))
 		score_time = None
 
-
-
 # normal game set up
 pygame.mixer.pre_init()
 pygame.init()
@@ -94,11 +92,9 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('Pong')
 
 # Rectangles for the game
-
 ball = pygame.Rect(screen_width/2 - 15, screen_height/2 - 15, 30, 30)
 player = pygame.Rect(screen_width - 20, screen_height/2 - 70, 10, 140)
 opponent = pygame.Rect(10, screen_height/2 - 70, 10, 140)
-
 
 bg_color = pygame.Color(0, 0, 0)
 ball_color = (255, 255, 255)
@@ -116,7 +112,6 @@ opponent_speed = 7
 # score timer
 score_time = True
 
-
 # text variables
 player_score = 0
 opponent_score = 0
@@ -126,50 +121,50 @@ game_font = pygame.font.Font("freesansbold.ttf", 32)
 pong_sound = pygame.mixer.Sound("sound/sfx_point.wav")
 score_sound = pygame.mixer.Sound("sound/sfx_swooshing.wav")
 
-# condition for the game to run
+async def main():
+	global player_speed
+	while True:
+		#Handling input
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				pygame.quit()
+				sys.exit()
 
-while True:
-	#Handling input
-	for event in pygame.event.get():
-		if event.type == pygame.QUIT:
-			pygame.quit()
-			sys.exit()
+			if event.type == pygame.KEYDOWN:
+				if event.key == pygame.K_DOWN:
+					player_speed += 7
+				if event.key == pygame.K_UP:
+					player_speed -= 7
+			if event.type == pygame.KEYUP:
+				if event.key == pygame.K_DOWN:
+					player_speed -= 7
+				if event.key == pygame.K_UP:
+					player_speed += 7
 
-		if event.type == pygame.KEYDOWN:
-			if event.key == pygame.K_DOWN:
-				player_speed += 7
-			if event.key == pygame.K_UP:
-				player_speed -= 7
-		if event.type == pygame.KEYUP:
-			if event.key == pygame.K_DOWN:
-				player_speed -= 7
-			if event.key == pygame.K_UP:
-				player_speed += 7
+		ball_animation()
+		player_animation()
+		opponent_animation()
+		
+		#game visuals
+		screen.fill(bg_color)
+		pygame.draw.rect(screen, player_color, player)
+		pygame.draw.rect(screen, opponent_color, opponent)
+		pygame.draw.ellipse(screen, ball_color, ball)
+		pygame.draw.aaline(screen, line_color, (screen_width/2,0), (screen_width/2, screen_height))
 
+		if score_time:
+			ball_start()
 
-	ball_animation()
-	player_animation()
-	opponent_animation()
-	
-	#game visuals
-	screen.fill(bg_color)
-	pygame.draw.rect(screen, player_color, player)
-	pygame.draw.rect(screen, opponent_color, opponent)
-	pygame.draw.ellipse(screen, ball_color, ball)
-	pygame.draw.aaline(screen, line_color, (screen_width/2,0), (screen_width/2, screen_height))
+		player_text = game_font.render(f"{player_score}", False, white)
+		screen.blit(player_text, (660, 470))
 
-	if score_time:
-		ball_start()
+		opponent_text = game_font.render(f"{opponent_score}", False, white)
+		screen.blit(opponent_text, (600, 470))
 
+		#updating the game window
+		pygame.display.flip()
+		clock.tick(75)
+		await asyncio.sleep(0)
 
-	player_text = game_font.render(f"{player_score}", False, white)
-	screen.blit(player_text, (660, 470))
-
-	opponent_text = game_font.render(f"{opponent_score}", False, white)
-	screen.blit(opponent_text, (600, 470))
-
-
-	#updating the game window
-	pygame.display.flip()
-	clock.tick(75)
+asyncio.run(main())
 
