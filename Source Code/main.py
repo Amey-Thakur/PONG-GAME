@@ -6,23 +6,23 @@ def ball_animation():
 	ball.y += ball_speed_y
 
 	if ball.top <= 0 or ball.bottom >= screen_height:
-		pygame.mixer.Sound.play(pong_sound)
+		if pong_sound: pygame.mixer.Sound.play(pong_sound)
 		ball_speed_y *= -1
 
 	# player score	
 	if ball.left <= 0:
-		pygame.mixer.Sound.play(score_sound)
+		if score_sound: pygame.mixer.Sound.play(score_sound)
 		player_score += 1
 		score_time = pygame.time.get_ticks()
 
 	# opponent score	
 	if ball.right >= screen_width:
-		pygame.mixer.Sound.play(score_sound)
+		if score_sound: pygame.mixer.Sound.play(score_sound)
 		opponent_score += 1
 		score_time = pygame.time.get_ticks()
 
 	if ball.colliderect(player) and ball_speed_x > 0:
-		pygame.mixer.Sound.play(pong_sound)
+		if pong_sound: pygame.mixer.Sound.play(pong_sound)
 		if abs(ball.right - player.left) < 10:
 			ball_speed_x *= -1
 		elif abs(ball.bottom - player.top) < 10 and ball_speed_y > 0:
@@ -31,7 +31,7 @@ def ball_animation():
 			ball_speed_y *= -1
 
 	if ball.colliderect(opponent) and ball_speed_x < 0: 
-		pygame.mixer.Sound.play(pong_sound)
+		if pong_sound: pygame.mixer.Sound.play(pong_sound)
 		if abs(ball.left - opponent.right) < 10:
 			ball_speed_x *= -1
 		elif abs(ball.bottom - opponent.top) < 10 and ball_speed_y > 0:
@@ -66,11 +66,11 @@ def ball_start():
 	if current_time - score_time < 700:
 		number_three = game_font.render("3", False, white)
 		screen.blit(number_three, (screen_width/2 - 10, screen_height/2 + 20))
-	if 700 < current_time - score_time < 1400:
-		number_number = game_font.render("2", False, white)
-		screen.blit(number_number, (screen_width/2 - 10, screen_height/2 + 20))
-	if 1400 < current_time - score_time < 2100:
-		number_one = game_font.render("2", False, white)
+	elif current_time - score_time < 1400:
+		number_two = game_font.render("2", False, white)
+		screen.blit(number_two, (screen_width/2 - 10, screen_height/2 + 20))
+	elif current_time - score_time < 2100:
+		number_one = game_font.render("1", False, white)
 		screen.blit(number_one, (screen_width/2 - 10, screen_height/2 + 20))
 
 	if current_time - score_time < 2100:
@@ -80,22 +80,22 @@ def ball_start():
 		ball_speed_x = 7 * random.choice((1, -1))
 		score_time = None
 
-# normal game set up
-pygame.mixer.pre_init()
+# Game Configurations & Constants
+pygame.mixer.pre_init(44100, -16, 2, 512)
 pygame.init()
 clock = pygame.time.Clock()
 
-# to set the screen size of the main window
 screen_width = 1280
 screen_height = 960
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('Pong')
 
-# Rectangles for the game
+# Global Rects
 ball = pygame.Rect(screen_width/2 - 15, screen_height/2 - 15, 30, 30)
 player = pygame.Rect(screen_width - 20, screen_height/2 - 70, 10, 140)
 opponent = pygame.Rect(10, screen_height/2 - 70, 10, 140)
 
+# Colors
 bg_color = pygame.Color(0, 0, 0)
 ball_color = (255, 255, 255)
 line_color = (132, 132, 130)
@@ -103,26 +103,32 @@ player_color = (0, 255, 0)
 opponent_color = (255, 0, 0)
 white = (255, 255, 255)
 
-# game variables
+# Variables
 ball_speed_x = 7 * random.choice((1, -1))
 ball_speed_y = 7 * random.choice((1, -1))
 player_speed = 0
 opponent_speed = 7
-
-# score timer
-score_time = True
-
-# text variables
 player_score = 0
 opponent_score = 0
-game_font = pygame.font.Font("freesansbold.ttf", 32)
+score_time = pygame.time.get_ticks() # Initialize with current time for startup delay
 
-# game sound
-pong_sound = pygame.mixer.Sound("sound/sfx_point.wav")
-score_sound = pygame.mixer.Sound("sound/sfx_swooshing.wav")
+# Font Loading (Safe Pattern)
+try:
+	game_font = pygame.font.Font("freesansbold.ttf", 32)
+except:
+	game_font = pygame.font.Font(None, 32)
+
+# Audio Loading (Safe Pattern)
+try:
+	pong_sound = pygame.mixer.Sound("sound/sfx_point.wav")
+	score_sound = pygame.mixer.Sound("sound/sfx_swooshing.wav")
+except:
+	pong_sound = None
+	score_sound = None
 
 async def main():
 	global player_speed
+	
 	while True:
 		#Handling input
 		for event in pygame.event.get():
@@ -141,11 +147,12 @@ async def main():
 				if event.key == pygame.K_UP:
 					player_speed += 7
 
+		# Logic
 		ball_animation()
 		player_animation()
 		opponent_animation()
 		
-		#game visuals
+		# Visuals
 		screen.fill(bg_color)
 		pygame.draw.rect(screen, player_color, player)
 		pygame.draw.rect(screen, opponent_color, opponent)
@@ -155,16 +162,17 @@ async def main():
 		if score_time:
 			ball_start()
 
-		player_text = game_font.render(f"{player_score}", False, white)
+		# Score Display
+		player_text = game_font.render(f"{player_score}", True, white)
 		screen.blit(player_text, (660, 470))
-
-		opponent_text = game_font.render(f"{opponent_score}", False, white)
+		opponent_text = game_font.render(f"{opponent_score}", True, white)
 		screen.blit(opponent_text, (600, 470))
 
-		#updating the game window
 		pygame.display.flip()
-		clock.tick(75)
+		clock.tick(60)
 		await asyncio.sleep(0)
 
-asyncio.run(main())
+# Execution
+if __name__ == "__main__":
+	asyncio.run(main())
 
