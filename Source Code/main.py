@@ -24,9 +24,9 @@ RIGHT_BORD = 1274
 
 # Assets
 try:
-	# Use Roboto if available (system), else default to safe sans-serif
-	game_font = pygame.font.SysFont("roboto", 32, bold=True)
-	author_font = pygame.font.SysFont("roboto", 18, bold=True)
+	# Use Outfit (Google Play style) if available, else default to safe sans-serif
+	game_font = pygame.font.SysFont("outfit", 32, bold=True)
+	author_font = pygame.font.SysFont("outfit", 18, bold=True)
 except:
 	game_font = pygame.font.SysFont("arial", 32, bold=True)
 	author_font = pygame.font.SysFont("arial", 18, bold=True)
