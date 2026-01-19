@@ -1,6 +1,6 @@
 # title: AMEY & MEGA
 # icon: icon.png
-import pygame, sys, random, asyncio, math
+import pygame, sys, random, asyncio, math, webbrowser
 try:
 	import platform
 except ImportError:
@@ -198,6 +198,8 @@ async def main():
 					github_url = "https://github.com/Amey-Thakur/PONG-GAME"
 					if platform and hasattr(platform, 'window'):
 						platform.window.open(github_url, "_blank")
+					else:
+						webbrowser.open(github_url)
 			if event.type == pygame.KEYDOWN:
 				if event.key == pygame.K_DOWN: player_speed += 7
 				if event.key == pygame.K_UP: player_speed -= 7
