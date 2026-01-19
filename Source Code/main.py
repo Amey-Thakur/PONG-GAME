@@ -115,6 +115,9 @@ def draw_background():
 		
 		# Draw star
 		pygame.draw.circle(screen, color, (int(star[0]), int(star[1])), max(1, int(star[2] * 1.2)))
+	
+	# Draw Arena Border
+	pygame.draw.rect(screen, (60, 60, 60), (0, 0, screen_width, screen_height), 4)
 
 async def loading_screen():
 	try:
@@ -280,11 +283,14 @@ async def main():
 		if score_time:
 			ball_start()
 
-		# HUD - Scores
+		# HUD - Scores (Perfectly Centered in each half)
 		player_text = game_font.render(f"{player_score}", True, white)
-		screen.blit(player_text, (660, 470))
+		player_rect = player_text.get_rect(center=(screen_width * 3/4, 50))
+		screen.blit(player_text, player_rect)
+		
 		opponent_text = game_font.render(f"{opponent_score}", True, white)
-		screen.blit(opponent_text, (600, 470))
+		opponent_rect = opponent_text.get_rect(center=(screen_width * 1/4, 50))
+		screen.blit(opponent_text, opponent_rect)
 
 		# Footer - Authorship (Capsule Design)
 		author_str = "Designed & Developed by Amey & Mega"
