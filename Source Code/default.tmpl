@@ -1,8 +1,8 @@
 <html lang="en-us"><script src="https://pygame-web.github.io/archives/0.9/pythons.js" type=module id=site data-LINES=57 data-CONSOLE=25 data-python=python3.12 data-os=vtx,fs,snd,gui async defer>#<!--
 
 # screen pixels (real, hardware)
-WIDTH=1280
-HEIGHT=720
+WIDTH=1024
+HEIGHT=600
 
 # reference/idealized screen pixels
 REFX = 1980
@@ -59,8 +59,8 @@ async def custom_site():
     platform.window.transfer.hidden = true
     platform.window.canvas.style.visibility = "visible"
 
-    apk = "AMEY_MEGA.apk"
-    bundle = "AMEY_MEGA"
+    apk = "{{cookiecutter.archive}}.apk"
+    bundle = "{{cookiecutter.archive}}"
 
     appdir = Path(f"/data/data/{bundle}")
     appdir.mkdir()
@@ -151,7 +151,7 @@ config = {
     user_canvas_managed : 0,
     ume_block : 1,
     can_close : 0,
-    archive : "AMEY_MEGA",
+    archive : "{{cookiecutter.archive}}",
     gui_debug : 3,
     cdn : "https://pygame-web.github.io/archives/0.9/",
     autorun : 0,
