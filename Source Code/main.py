@@ -120,8 +120,8 @@ def draw_background():
 		# Draw star
 		pygame.draw.circle(screen, color, (int(star[0]), int(star[1])), max(1, int(star[2] * 1.2)))
 	
-	# Draw Arena Border (Brighter for visibility)
-	pygame.draw.rect(screen, (100, 100, 100), (0, 0, screen_width, screen_height), 4)
+	# Draw Arena Border (Slightly inset for visibility)
+	pygame.draw.rect(screen, (100, 100, 100), (2, 2, screen_width - 4, screen_height - 4), 4)
 
 async def loading_screen():
 	try:
