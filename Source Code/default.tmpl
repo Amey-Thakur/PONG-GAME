@@ -85,7 +85,7 @@ async def custom_site():
             star[1] += star[2]
             if star[1] > HEIGHT:
                 star[1] = 0
-                star[0] = random.randint(0, WIDTH)
+                star[2] = random.uniform(0.2, 1.5)
             color_val = int(star[2] * 80) + 40
             pygame.draw.circle(screen, (color_val, color_val, color_val), (int(star[0]), int(star[1])), max(1, int(star[2] * 1.2)))
         
@@ -136,11 +136,9 @@ async def custom_site():
         compose()
         await asyncio.sleep(.01)
 
-    pg_bar(track.len, track.len)
-    compose()
+    # FINAL STEP: Add paths and execute
+    sys.path.append(appdir.as_posix())
+    import main
+    await main.main()
 
-# --></html><script type="application/python">
-import asyncio
-import main
-asyncio.run(main.main())
-</script>
+# --></html>
