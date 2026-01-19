@@ -5,22 +5,38 @@
     <title>AMEY & MEGA</title>
     <style>
         body { margin: 0; padding: 0; background-color: #050505; color: #eee; overflow: hidden; font-family: sans-serif; user-select: none; -webkit-user-select: none; }
-        #canvas { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); outline: none; }
-        #loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; }
-        .spinner {
-            width: 50px; height: 50px; border: 5px solid #333; border-top: 5px solid #fff;
-            border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px auto;
+        
+        /* NUCLEAR OPTION: Full screen overlay to hide EVERYTHING including boot text */
+        #boot-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #050505; z-index: 99999999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        /* Hide Default Pygbag UI Artifacts */
-        #status, #output, #console { display: none !important; }
+
+        .logo-pulse {
+            width: 150px; height: 150px; margin-bottom: 30px;
+            animation: pulse 2s infinite ease-in-out;
+            background: url('icon.png') no-repeat center; background-size: contain;
+        }
+        @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.8; } }
+
+        .loading-text {
+            font-size: 14px; color: #888; letter-spacing: 3px; text-transform: uppercase; margin-top: 20px;
+        }
+
+        #canvas { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); outline: none; z-index: 10; }
+        
+        /* Aggressively hide Pygbag artifacts */
+        #status, #output, #console, #loading { display: none !important; visibility: hidden !important; opacity: 0 !important; }
     </style>
 </head>
 <body>
-    <div id="loading">
-        <div class="spinner"></div>
-        <div>LOADING PONG GAME...</div>
+    <!-- The Safety Curtain -->
+    <div id="boot-overlay">
+        <div class="logo-pulse"></div>
+        <div class="loading-text">Initializing Premium Experience...</div>
     </div>
+
     <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
 
     <script src="https://pygame-web.github.io/archives/0.9/pythons.js" 
@@ -32,7 +48,7 @@ import platform
 import json
 from pathlib import Path
 
-# Fix for platform.window in some environments
+# Stub window if needed
 if not hasattr(platform, 'window'):
     class MockWindow:
         def __getattr__(self, name): return None
@@ -46,35 +62,34 @@ async def custom_site():
         appdir = Path(f"/data/data/{bundle}")
         appdir.mkdir(parents=True, exist_ok=True)
 
-        # Mount configuration
         cfg = {"io": "url", "type": "mount", "mount": {"point": appdir.as_posix(), "path": "/"}, "path": f"/ => {appdir.as_posix()}"}
         
-        # Check if MM (Mount Manager) is available, otherwise basic sleep (shouldn't happen in browser)
         if hasattr(platform.window, 'MM'):
             track = platform.window.MM.prepare(apk, json.dumps(cfg))
             while not track.ready:
                 await asyncio.sleep(0.1)
-        else:
-            print("Warning: MM not found, skipping mount wait.")
 
-        # 2. Add to sys.path
+        # 2. Setup Path
         if appdir.as_posix() not in sys.path:
             sys.path.append(appdir.as_posix())
 
-        # 3. Clean up UI
+        # 3. DROP THE CURTAIN: Only now do we remove the overlay
         try:
-             platform.window.document.getElementById("loading").style.display = "none"
+             platform.window.document.getElementById("boot-overlay").style.display = "none"
         except: 
              pass
 
-        # 4. Run Main
+        # 4. Start Game
         import main
         await main.main()
 
     except Exception as e:
-        print(f"CRITICAL ERROR: {e}")
-        import traceback
-        traceback.print_exc()
+        # In case of error, show it on the overlay text
+        try:
+            err_msg = str(e)
+            platform.window.document.querySelector(".loading-text").innerText = "ERROR: " + err_msg
+        except:
+             print(f"CRITICAL: {e}")
 
 # -->
     </script>
