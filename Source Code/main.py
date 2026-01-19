@@ -285,9 +285,17 @@ async def main():
 		opponent_text = game_font.render(f"{opponent_score}", True, white)
 		screen.blit(opponent_text, (600, 470))
 
-		# Footer - Authorship
-		author_text = author_font.render("Designed & Developed by AMEY & MEGA", True, (100, 100, 100))
-		screen.blit(author_text, (screen_width/2 - 165, screen_height - 30))
+		# Footer - Authorship (Capsule Design)
+		author_str = "Designed & Developed by AMEY & MEGA"
+		author_text = author_font.render(author_str, True, (180, 180, 180))
+		text_rect = author_text.get_rect(center=(screen_width/2, screen_height - 35))
+		
+		# Draw subtle capsule background
+		bg_rect = text_rect.inflate(40, 15)
+		pygame.draw.rect(screen, (30, 30, 30), bg_rect, border_radius=15)
+		pygame.draw.rect(screen, (60, 60, 60), bg_rect, width=1, border_radius=15)
+		
+		screen.blit(author_text, text_rect)
 
 		pygame.display.flip()
 		clock.tick(60)
