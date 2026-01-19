@@ -148,7 +148,7 @@ async def loading_screen():
 		
 		progress = min(elapsed / 3000, 1.0)
 		
-		# Draw Background Grid even in loading for consistency
+		# Draw Background even in loading for consistency
 		draw_background()
 
 		if icon_orig:
@@ -188,7 +188,7 @@ pygame.display.set_caption('AMEY & MEGA')
 # Initialize Stars for Parallax Starfield
 stars = []
 for _ in range(100):
-	# [x, y, speed, depth/brightness]
+	# [x, y, speed]
 	stars.append([random.randint(0, screen_width), random.randint(0, screen_height), random.uniform(0.2, 1.5)])
 
 try:
@@ -222,6 +222,7 @@ opponent_kickback = 0
 player_glow = 0
 opponent_glow = 0
 score_time = None
+bg_rect = pygame.Rect(0, 0, 0, 0) # Global init for event loop
 
 # Font Assets
 try:
@@ -240,7 +241,7 @@ except:
 	score_sound = None
 
 async def main():
-	global player_speed, player_glow, opponent_glow, score_time
+	global player_speed, player_glow, opponent_glow, score_time, bg_rect
 	
 	await loading_screen()
 	score_time = pygame.time.get_ticks()
@@ -288,7 +289,7 @@ async def main():
 		pygame.draw.rect(screen, opponent_color, (opponent.x + opponent_kickback, opponent.y, opponent.width, opponent.height), border_radius=2)
 		
 		pygame.draw.ellipse(screen, ball_color, ball)
-		pygame.draw.aaline(screen, line_color, (screen_width/2,0), (screen_width/2, screen_height))
+		pygame.draw.aaline(screen, line_color, (screen_width/2, 0), (screen_width/2, screen_height))
 
 		if score_time:
 			ball_start()
@@ -303,7 +304,6 @@ async def main():
 		screen.blit(opponent_text, opponent_rect)
 
 		# Footer - Authorship (Capsule Design)
-		global bg_rect
 		author_str = "Designed & Developed by Amey & Mega"
 		author_text = author_font.render(author_str, True, (180, 180, 180))
 		text_rect = author_text.get_rect(center=(screen_width/2, screen_height - 35))
@@ -321,4 +321,3 @@ async def main():
 
 if __name__ == "__main__":
 	asyncio.run(main())
-
