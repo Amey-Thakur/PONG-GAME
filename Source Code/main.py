@@ -3,7 +3,7 @@
 import pygame, sys, random, asyncio
 
 def ball_animation():
-	global ball_speed_x, ball_speed_y, player_score, opponent_score, score_time, player_kickback, opponent_kickback
+	global ball_speed_x, ball_speed_y, player_score, opponent_score, score_time, player_kickback, opponent_kickback, player_glow, opponent_glow
 	ball.x += ball_speed_x
 	ball.y += ball_speed_y
 
@@ -27,6 +27,7 @@ def ball_animation():
 	if ball.colliderect(player) and ball_speed_x > 0:
 		if pong_sound: pygame.mixer.Sound.play(pong_sound)
 		player_kickback = 15  # Trigger animation
+		player_glow = 10      # Trigger glow
 		if abs(ball.right - player.left) < 10:
 			ball_speed_x *= -1
 		elif abs(ball.bottom - player.top) < 10 and ball_speed_y > 0:
@@ -37,6 +38,7 @@ def ball_animation():
 	if ball.colliderect(opponent) and ball_speed_x < 0: 
 		if pong_sound: pygame.mixer.Sound.play(pong_sound)
 		opponent_kickback = -15 # Trigger animation
+		opponent_glow = 10       # Trigger glow
 		if abs(ball.left - opponent.right) < 10:
 			ball_speed_x *= -1
 		elif abs(ball.bottom - opponent.top) < 10 and ball_speed_y > 0:
@@ -95,11 +97,20 @@ def ball_start():
 		ball_speed_x = 7 * random.choice((1, -1))
 		score_time = None
 
+bg_offset = 0
 def draw_background():
+	global bg_offset
 	screen.fill(bg_color)
-	# Draw subtle horizontal lines for texture
-	for i in range(0, screen_height, 40):
+	
+	# Draw animated moving grid
+	bg_offset = (bg_offset + 1) % 80
+	for i in range(-80 + int(bg_offset), screen_height + 80, 80):
+		# Horizontal moving lines
 		pygame.draw.line(screen, accent_color, (0, i), (screen_width, i), 1)
+	
+	for j in range(0, screen_width, 80):
+		# Vertical static lines
+		pygame.draw.line(screen, accent_color, (j, 0), (j, screen_height), 1)
 
 async def loading_screen():
 	try:
@@ -138,7 +149,7 @@ async def loading_screen():
 		pygame.draw.rect(screen, white, (bar_x, bar_y, bar_width * progress, bar_height), border_radius=5)
 		
 		# Loading Text
-		load_text = author_font.render("INITIALIZING ARCADE SYSTEMS...", True, (150, 150, 150))
+		load_text = author_font.render("INITIALIZING PONG GAME...", True, (200, 200, 200))
 		load_rect = load_text.get_rect(center=(screen_width/2, bar_y + 40))
 		screen.blit(load_text, load_rect)
 
@@ -183,6 +194,8 @@ player_score = 0
 opponent_score = 0
 player_kickback = 0
 opponent_kickback = 0
+player_glow = 0
+opponent_glow = 0
 score_time = pygame.time.get_ticks()
 
 # Font Assets
@@ -226,9 +239,21 @@ async def main():
 		# Rendering
 		draw_background()
 		
-		# Render Paddles with Kickback Animation
-		pygame.draw.rect(screen, player_color, (player.x + player_kickback, player.y, player.width, player.height))
-		pygame.draw.rect(screen, opponent_color, (opponent.x + opponent_kickback, opponent.y, opponent.width, opponent.height))
+		# Render Paddles with Kickback Animation & Glow
+		if player_glow > 0:
+			# Subtle outer glow rect (larger and transparent) - simulated with multiple outlines
+			glow_rect = pygame.Rect(player.x + player_kickback - 5, player.y - 5, player.width + 10, player.height + 10)
+			pygame.draw.rect(screen, (50, 150, 80), glow_rect, border_radius=5)
+			player_glow -= 1
+
+		pygame.draw.rect(screen, player_color, (player.x + player_kickback, player.y, player.width, player.height), border_radius=2)
+		
+		if opponent_glow > 0:
+			glow_rect = pygame.Rect(opponent.x + opponent_kickback - 5, opponent.y - 5, opponent.width + 10, opponent.height + 10)
+			pygame.draw.rect(screen, (150, 50, 50), glow_rect, border_radius=5)
+			opponent_glow -= 1
+
+		pygame.draw.rect(screen, opponent_color, (opponent.x + opponent_kickback, opponent.y, opponent.width, opponent.height), border_radius=2)
 		
 		pygame.draw.ellipse(screen, ball_color, ball)
 		pygame.draw.aaline(screen, line_color, (screen_width/2,0), (screen_width/2, screen_height))
