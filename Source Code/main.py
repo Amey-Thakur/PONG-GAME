@@ -1,6 +1,6 @@
 # title: AMEY & MEGA
 # icon: icon.png
-import pygame, sys, random, asyncio
+import pygame, sys, random, asyncio, math
 
 def ball_animation():
 	global ball_speed_x, ball_speed_y, player_score, opponent_score, score_time, player_kickback, opponent_kickback, player_glow, opponent_glow
@@ -103,7 +103,11 @@ def draw_background():
 	screen.fill(bg_color)
 	
 	# Draw animated moving grid
-	bg_offset = (bg_offset + 1) % 80
+	bg_offset = (bg_offset + 0.5) % 80
+	# Secondary grid for depth
+	for k in range(-80 + int(bg_offset/2), screen_height + 80, 160):
+		pygame.draw.line(screen, (30, 30, 30), (0, k), (screen_width, k), 1)
+
 	for i in range(-80 + int(bg_offset), screen_height + 80, 80):
 		# Horizontal moving lines
 		pygame.draw.line(screen, accent_color, (0, i), (screen_width, i), 1)
@@ -114,17 +118,15 @@ def draw_background():
 
 async def loading_screen():
 	try:
-		icon = pygame.image.load("icon.png")
-		icon = pygame.transform.scale(icon, (300, 300))
-		icon_rect = icon.get_rect(center=(screen_width/2, screen_height/2 - 50))
+		icon_orig = pygame.image.load("icon.png").convert_alpha()
 	except:
-		icon = None
+		icon_orig = None
 
 	start_time = pygame.time.get_ticks()
 	while True:
 		current_time = pygame.time.get_ticks()
 		elapsed = current_time - start_time
-		if elapsed > 3000: break # 3 second loading
+		if elapsed > 3500: break # Increased slightly for better feel
 
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
@@ -132,26 +134,38 @@ async def loading_screen():
 				sys.exit()
 
 		screen.fill(bg_color)
-		if icon:
+		
+		# Draw Background Grid even in loading for consistency
+		draw_background()
+
+		if icon_orig:
+			# Pulse effect
+			pulse = 1.0 + 0.05 * math.sin(current_time * 0.005)
+			icon = pygame.transform.smoothscale(icon_orig, (int(300 * pulse), int(300 * pulse)))
+			icon_rect = icon.get_rect(center=(screen_width/2, screen_height/2 - 50))
 			screen.blit(icon, icon_rect)
 		
 		# Progress bar
-		bar_width = 400
-		bar_height = 10
+		bar_width = 460
+		bar_height = 6
 		bar_x = screen_width/2 - bar_width/2
-		bar_y = screen_height/2 + 150
+		bar_y = screen_height/2 + 180
 		
-		progress = min(elapsed / 2500, 1.0)
+		progress = min(elapsed / 3000, 1.0)
 		
-		# Draw background bar
-		pygame.draw.rect(screen, accent_color, (bar_x, bar_y, bar_width, bar_height), border_radius=5)
+		# Draw background bar (glass look)
+		pygame.draw.rect(screen, (40, 40, 40), (bar_x-2, bar_y-2, bar_width+4, bar_height+4), border_radius=10)
 		# Draw progress
-		pygame.draw.rect(screen, white, (bar_x, bar_y, bar_width * progress, bar_height), border_radius=5)
+		pygame.draw.rect(screen, white, (bar_x, bar_y, bar_width * progress, bar_height), border_radius=10)
 		
 		# Loading Text
-		load_text = author_font.render("INITIALIZING PONG GAME...", True, (200, 200, 200))
+		load_text = author_font.render("INITIALIZING PONG GAME...", True, (220, 220, 220))
 		load_rect = load_text.get_rect(center=(screen_width/2, bar_y + 40))
 		screen.blit(load_text, load_rect)
+
+		pygame.display.flip()
+		await asyncio.sleep(0)
+		clock.tick(60)
 
 		pygame.display.flip()
 		await asyncio.sleep(0)
