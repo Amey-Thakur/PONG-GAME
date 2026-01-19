@@ -123,9 +123,13 @@ def player_animation():
 
 def opponent_animation():
 	global opponent_kickback
-	if opponent.top < ball.y: opponent.y += opponent_speed
-	if opponent.bottom > ball.y: opponent.y -= opponent_speed
-	# Clip to inner borders
+	# Track ball center for pixel-perfect alignment
+	if opponent.centery < ball.y:
+		opponent.y += opponent_speed
+	elif opponent.centery > ball.y:
+		opponent.y -= opponent_speed
+
+	# Clip to inner borders strictly
 	if opponent.top <= TOP_BORD: opponent.top = TOP_BORD
 	if opponent.bottom >= BOT_BORD: opponent.bottom = BOT_BORD
 	if opponent_kickback < 0: opponent_kickback += 1
@@ -133,7 +137,11 @@ def opponent_animation():
 def ball_start():
 	global ball_speed_x, ball_speed_y, score_time
 	current_time = pygame.time.get_ticks()
+	
+	# Lock everything to center during countdown
 	ball.center = (screen_width/2, screen_height/2)
+	player.centery = screen_height/2
+	opponent.centery = screen_height/2
 
 	if current_time - score_time < 700:
 		num_text = game_font.render("3", True, white)
@@ -180,20 +188,26 @@ async def main():
 	player.centery = screen_height/2
 	opponent.centery = screen_height/2
 
-	# Loading Screen (Robust 3-second sequence)
+	# Loading Screen (Foolproof sequence)
 	start_ticks = pygame.time.get_ticks()
-	while pygame.time.get_ticks() - start_ticks < 3000:
+	loading_active = True
+	while loading_active:
+		curr_ticks = pygame.time.get_ticks()
+		if curr_ticks - start_ticks > 3000:
+			loading_active = False
+			break
+			
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				pygame.quit()
 				sys.exit()
 		
-		elapsed = pygame.time.get_ticks() - start_ticks
+		elapsed = curr_ticks - start_ticks
 		progress = min(elapsed / 2500, 1.0)
 		
 		draw_background()
 		if icon_orig:
-			pulse = 1.0 + 0.05 * math.sin(pygame.time.get_ticks() * 0.005)
+			pulse = 1.0 + 0.05 * math.sin(curr_ticks * 0.005)
 			icon = pygame.transform.scale(icon_orig, (int(300 * pulse), int(300 * pulse)))
 			screen.blit(icon, icon.get_rect(centerx=screen_width/2, bottom=screen_height/2 + 80))
 		
@@ -206,7 +220,7 @@ async def main():
 		screen.blit(lt, lt.get_rect(center=(screen_width/2, bar_y + 40)))
 		
 		pygame.display.flip()
-		await asyncio.sleep(0)
+		await asyncio.sleep(0.01) # Explicit sleep for browser stability
 		clock.tick(60)
 
 	score_time = pygame.time.get_ticks()
