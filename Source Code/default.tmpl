@@ -8,7 +8,6 @@
     <style>
         body { margin: 0; padding: 0; background-color: #050505; color: #eee; overflow: hidden; font-family: 'Outfit', sans-serif; user-select: none; -webkit-user-select: none; }
         
-        /* CLEAN OVERLAY */
         #boot-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: #050505; z-index: 1000;
@@ -25,15 +24,8 @@
             font-size: 14px; color: #aaa; letter-spacing: 3px; text-transform: uppercase; margin-top: 20px; font-weight: bold;
         }
 
-        /* LIGHTWEIGHT CSS LOADER */
         #progress-container { width: 300px; height: 4px; background: #222; border-radius: 2px; overflow: hidden; }
-        #progress-fill { 
-            width: 0%; height: 100%; background: #ffffff; 
-            /* Smoothly animate to 85% over 5 seconds to simulate loading */
-            animation: load 5s ease-out forwards; 
-        }
-        
-        @keyframes load { 0% { width: 0%; } 100% { width: 85%; } }
+        #progress-fill { width: 0%; height: 100%; background: #ffffff; transition: width 0.2s; } 
 
         #canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; outline: none; }
         
@@ -45,26 +37,32 @@
     <div id="boot-overlay">
         <div class="logo"></div>
         <div id="progress-container"><div id="progress-fill"></div></div>
-        <div class="loading-text">INITIALIZING PONG GAME...</div>
+        <div class="loading-text" id="status-text">INITIALIZING PONG GAME...</div>
     </div>
 
     <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
 
     <script>
-        // Simple function called by Python to clear overlay
+        // Set bar width from Python
+        window.setBar = function(percent) {
+            document.getElementById('progress-fill').style.width = percent + '%';
+        };
+
+        // Finish load
         window.finishLoad = function() {
-            const bar = document.getElementById('progress-fill');
-            const overlay = document.getElementById('boot-overlay');
-            
-            // Snap to 100%
-            bar.style.animation = 'none';
-            bar.style.width = '100%';
-            
-            // Fade out
+            window.setBar(100);
             setTimeout(() => {
+                const overlay = document.getElementById('boot-overlay');
                 overlay.style.opacity = '0';
                 setTimeout(() => overlay.style.display = 'none', 300);
-            }, 100);
+            }, 200);
+        };
+
+        // Show Error
+        window.showError = function(msg) {
+            const txt = document.getElementById('status-text');
+            txt.innerText = "ERROR: " + msg;
+            txt.style.color = "#ff4444";
         };
     </script>
 
@@ -85,41 +83,44 @@ if not hasattr(platform, 'window'):
 
 async def custom_site():
     try:
-        # 1. Immediate Mount (Fastest Path)
+        # 1. Start Mount
         apk = "{{cookiecutter.archive}}.apk"
         bundle = "{{cookiecutter.archive}}"
         appdir = Path(f"/data/data/{bundle}")
         appdir.mkdir(parents=True, exist_ok=True)
 
-        # Mount WITHOUT waiting loop (Pygbag handles this well internally now)
         cfg = {"io": "url", "type": "mount", "mount": {"point": appdir.as_posix(), "path": "/"}, "path": f"/ => {appdir.as_posix()}"}
         
         if hasattr(platform.window, 'MM'):
-            platform.window.MM.prepare(apk, json.dumps(cfg))
+            track = platform.window.MM.prepare(apk, json.dumps(cfg))
+            
+            # MANDATORY WAIT LOOP: Wait for download to actually finish
+            while not track.ready:
+                # Update bar based on real download progress
+                if track.len > 0:
+                    percent = int(track.pos / track.len * 100)
+                    try: platform.window.setBar(percent)
+                    except: pass
+                await asyncio.sleep(0.1)
         
         # 2. Add Path
         if appdir.as_posix() not in sys.path:
             sys.path.append(appdir.as_posix())
 
-        # 3. Wait JUST enough for import
-        await asyncio.sleep(0.5)
-
-        # 4. Import & Launch
+        # 3. Import & Launch
         import main
         
-        # 5. Signal JS to lift curtain
-        try:
-             platform.window.finishLoad()
+        # 4. Success -> Lift Curtain
+        try: platform.window.finishLoad()
         except: pass
 
         await main.main()
 
     except Exception as e:
-        print(e)
-        # Fail-safe: remove overlay if game crashes so we see why
-        try:
-             platform.window.document.getElementById("boot-overlay").style.display = "none"
-        except: pass
+        # Critical: Show error to user
+        try: platform.window.showError(str(e))
+        except: print(e)
+
 # -->
     </script>
 </body>
