@@ -1,80 +1,111 @@
-<html lang="en-us">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>AMEY & MEGA</title>
-    <style>
-        body { background-color: #050505; color: #eeeeee; margin: 0; padding: 0; overflow: hidden; font-family: sans-serif; }
-        #webgl-loader {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #050505; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; z-index: 999999;
-        }
-        .logo-pulse {
-            width: 300px; height: 300px; margin-bottom: 20px;
-            animation: pulse 2s infinite ease-in-out;
-            background: url('icon.png') no-repeat center; background-size: contain;
-        }
-        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } }
-        .progress-container { width: 460px; height: 6px; background: #282828; border-radius: 10px; overflow: hidden; }
-        #progress-bar { width: 0%; height: 100%; background: #ffffff; transition: width 0.2s; }
-        .loading-text { margin-top: 15px; font-size: 14px; color: #888888; letter-spacing: 2px; text-transform: uppercase; }
-        #canvas { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); visibility: hidden; z-index: 10; }
-    </style>
-</head>
-<body>
-    <div id="webgl-loader">
-        <div class="logo-pulse"></div>
-        <div class="progress-container"><div id="progress-bar"></div></div>
-        <div class="loading-text">Initializing Arcade Core...</div>
-    </div>
-    
-    <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+<html lang="en-us"><script src="https://pygame-web.github.io/archives/0.9/pythons.js" type=module id=site data-LINES=57 data-CONSOLE=25 data-python=python3.12 data-os=vtx,fs,snd,gui async defer>#<!--
 
-    <script src="https://pygame-web.github.io/archives/0.9/pythons.js" 
-            type="module" id="site" data-python="python3.12" data-os="vtx,fs,snd,gui" 
-            data-CONSOLE="0" async defer>#<!--
+# screen pixels (real, hardware)
+WIDTH=1280
+HEIGHT=720
 
-import sys
-import asyncio
-import platform
-import json
-from pathlib import Path
+# reference/idealized screen pixels
+REFX = 1980
+REFY = 1080
 
+def u(real, ref, v):
+    if abs(v)<0.9999999:
+        result = int( (float(real)/100.0) * (v*1000))
+        if v<0:
+            return real-result
+        return result
+    return int( (real/ref) * v )
+
+def ux(*argv):
+    global WIDTH, REFX
+    acc = 0
+    for v in argv:
+        acc += u(WIDTH, REFX, v)
+    return acc
+
+def uy(*argv):
+    global HEIGHT, REFY
+    acc = 0
+    for v in argv:
+        acc += u(HEIGHT, REFY, v)
+    return acc
+
+# do not rename
 async def custom_site():
+    import sys
+    import asyncio
+    import platform
+    import json
+    from pathlib import Path
+    import embed
     import pygame
-    
-    def update_progress(pos, total):
-        try:
-            p = int((pos / (total or 1)) * 100)
-            platform.window.document.getElementById("progress-bar").style.width = f"{p}%"
-        except: pass
 
-    apk = "{{cookiecutter.archive}}.apk"
-    bundle = "{{cookiecutter.archive}}"
-    appdir = Path(f"/data/data/{bundle}")
-    appdir.mkdir(parents=True, exist_ok=True)
+    # THEME: Cinema Mode Background
+    platform.document.body.style.background = "#050505"
 
-    cfg = {"io":"url", "type":"mount", "mount":{"point":appdir.as_posix(), "path":"/"}, "path":f"/ => {appdir.as_posix()}"}
-    track = platform.window.MM.prepare(apk, json.dumps(cfg))
+    def compose():
+        pygame.display.update()
+        window.chromakey(None, *screen.get_colorkey(), 40)
 
-    while not track.ready:
-        update_progress(track.pos, track.len)
-        await asyncio.sleep(.01)
+    pygame.init()
+    pygame.font.init()
 
-    update_progress(100, 100)
-    
-    # Switch to Game
-    platform.window.document.getElementById("webgl-loader").style.display = "none"
+    screen = pygame.display.set_mode([ux(.100),uy(.100)], pygame.SRCALPHA, 32)
+    screen.set_colorkey( (0,0,0,0), pygame.RLEACCEL )
+    screen.fill( (0,0,0,0) )
+
+    compose()
+
+    platform.window.transfer.hidden = true
     platform.window.canvas.style.visibility = "visible"
 
+    # Use dynamic archive detection
+    apk = "{{cookiecutter.archive}}.apk"
+    bundle = "{{cookiecutter.archive}}"
+
+    appdir = Path(f"/data/data/{bundle}")
+    appdir.mkdir()
+
+    # mount apk
+    cfg = {
+        "io": "url",
+        "type":"mount",
+        "mount" : {
+            "point" : appdir.as_posix(),
+            "path" : "/",
+        },
+        "path" : f"/ => {appdir.as_posix()}",
+    }
+
+    track = platform.window.MM.prepare(apk, json.dumps(cfg))
+
+    marginx = ux(.020)
+    marginy = uy(.450)
+
+    def pg_bar(pos):
+        nonlocal marginx, marginy
+        total = track.len or 10
+        slot = ux(.120)/ total
+
+        # Theme matching progress bar
+        pygame.draw.rect(screen,(30,30,30),( marginx-ux(10), marginy-uy(10), (total*slot)+ux(20), uy(110) ), border_radius=10)
+        pygame.draw.rect(screen,(0,255,127), ( marginx, marginy, track.pos*slot, uy(90)), border_radius=10 )
+
+    # wait until zip mount + overlayfs is complete
+    while not track.ready:
+        pg_bar(track.pos)
+        compose()
+        await asyncio.sleep(.1)
+
+    pg_bar(track.len)
+    compose()
+
+    # switch to app
     if appdir.as_posix() not in sys.path:
         sys.path.append(appdir.as_posix())
-    
+
     import main
     await main.main()
 
 # -->
-    </script>
-</body>
-</html>
+</script></html>
