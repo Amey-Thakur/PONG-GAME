@@ -1,3 +1,21 @@
+<!--
+============================================================================
+PONG GAME - Web Loader Template
+============================================================================
+A lightweight Pygbag template for deploying Pygame to GitHub Pages.
+
+Authors:          Amey Thakur & Mega Satish
+Date:             July 5, 2021
+License:          MIT License
+Repository:       https://github.com/Amey-Thakur/PONG-GAME
+Profiles:
+  - Amey Thakur:  https://github.com/Amey-Thakur
+  - Mega Satish:  https://github.com/msatmod
+
+Copyright (c) 2021 Amey Thakur & Mega Satish
+============================================================================
+-->
+<!DOCTYPE html>
 <html lang="en-us">
 <head>
     <meta charset="utf-8">
@@ -6,110 +24,204 @@
     <link rel="icon" type="image/png" href="favicon.png">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* PRO-GRADE SUPPRESSION: Everything is invisible by default */
-        body { margin: 0; padding: 0; background-color: #050505; color: #eee; overflow: hidden; font-family: 'Outfit', sans-serif; user-select: none; -webkit-user-select: none; visibility: hidden; }
-        
-        /* WHITELIST: Only allowing our Overlay and Game Canvas to be seen */
+        /* ================================================================
+           BASE STYLES
+           ================================================================ */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: #050505;
+            color: #eeeeee;
+            font-family: 'Outfit', sans-serif;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            visibility: hidden;
+        }
+
+        /* ================================================================
+           LOADING OVERLAY
+           ================================================================ */
         #boot-overlay {
             visibility: visible;
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #050505; z-index: 99999;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            transition: opacity 0.5s;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #050505;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease-out;
         }
 
-        #canvas { 
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 30px;
+            background: url('icon.png') no-repeat center;
+            background-size: contain;
+        }
+
+        #progress-container {
+            width: 300px;
+            height: 4px;
+            background: #222222;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        #progress-fill {
+            width: 0%;
+            height: 100%;
+            background: #ffffff;
+            animation: load 5s ease-out forwards;
+        }
+
+        @keyframes load {
+            0%   { width: 0%; }
+            100% { width: 90%; }
+        }
+
+        .loading-text {
+            font-size: 14px;
+            color: #aaaaaa;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        /* ================================================================
+           GAME CANVAS
+           ================================================================ */
+        #canvas {
             visibility: visible;
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; outline: none; z-index: 10; 
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            outline: none;
+            z-index: 10;
         }
 
-        .logo { width: 100px; height: 100px; margin-bottom: 25px; background: url('icon.png') no-repeat center; background-size: contain; }
-        .loading-text { font-size: 14px; color: #aaa; letter-spacing: 3px; text-transform: uppercase; margin-top: 20px; font-weight: bold; }
-
-        #progress-container { width: 300px; height: 4px; background: #222; border-radius: 2px; overflow: hidden; }
-        #progress-fill { width: 0%; height: 100%; background: #ffffff; animation: load 6s cubic-bezier(0.1, 0.7, 1.0, 0.1) forwards; }
-        @keyframes load { 0% { width: 0%; } 100% { width: 92%; } }
-
-        /* Nuking Pygbag artifacts */
+        /* ================================================================
+           PYGBAG ARTIFACT SUPPRESSION
+           ================================================================ */
         #status, #output, #console { display: none !important; }
     </style>
 </head>
 <body>
+    <!-- Loading Overlay -->
     <div id="boot-overlay">
         <div class="logo"></div>
         <div id="progress-container"><div id="progress-fill"></div></div>
-        <div class="loading-text" id="status-text">INITIALIZING PONG GAME...</div>
+        <div class="loading-text">INITIALIZING PONG GAME...</div>
     </div>
 
-    <!-- The actual game canvas -->
+    <!-- Game Canvas -->
     <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
 
+    <!-- Loader Control Script -->
     <script>
-        // Only called when the game is ACTUALLY ready
+        /**
+         * Completes the loading animation and reveals the game.
+         * Called by Python when the game is ready to start.
+         */
         window.finishLoad = function() {
             const bar = document.getElementById('progress-fill');
             const overlay = document.getElementById('boot-overlay');
-            
-            // Complete the bar visual
+
+            // Complete progress bar
             bar.style.animation = 'none';
             bar.style.width = '100%';
-            
-            // Fade out the overlay to reveal the game
-            setTimeout(() => {
+
+            // Fade out overlay
+            setTimeout(function() {
                 overlay.style.opacity = '0';
-                setTimeout(() => overlay.style.display = 'none', 500);
+                setTimeout(function() {
+                    overlay.style.display = 'none';
+                }, 500);
             }, 200);
         };
     </script>
 
-    <script src="https://pygame-web.github.io/archives/0.9/pythons.js" 
-            type=module id=site data-python="python3.11" data-os="vtx,fs,snd,gui" data-CONSOLE="0" async defer>
+    <!-- Pygbag Engine -->
+    <script src="https://pygame-web.github.io/archives/0.9/pythons.js"
+            type="module"
+            id="site"
+            data-python="python3.11"
+            data-os="vtx,fs,snd,gui"
+            data-CONSOLE="0"
+            async defer>
 #<!--
+# ============================================================================
+# PYGBAG LOADER SCRIPT
+# ============================================================================
+# This script handles mounting the game archive and launching the main module.
+# ============================================================================
+
 import sys
 import asyncio
 import platform
 import json
 from pathlib import Path
 
-# Stub
+# Platform stub for non-browser environments
 if not hasattr(platform, 'window'):
     class MockWindow:
-        def __getattr__(self, name): return None
+        def __getattr__(self, name):
+            return None
     platform.window = MockWindow()
 
+
 async def custom_site():
+    """
+    Main entry point for web deployment.
+    Mounts the game archive and launches the game.
+    """
     try:
-        # 1. Mount (Standard)
+        # Configure mount paths
         apk = "{{cookiecutter.archive}}.apk"
         bundle = "{{cookiecutter.archive}}"
         appdir = Path(f"/data/data/{bundle}")
         appdir.mkdir(parents=True, exist_ok=True)
-        cfg = {"io": "url", "type": "mount", "mount": {"point": appdir.as_posix(), "path": "/"}, "path": f"/ => {appdir.as_posix()}"}
-        
+
+        # Mount configuration
+        cfg = {
+            "io": "url",
+            "type": "mount",
+            "mount": {"point": appdir.as_posix(), "path": "/"},
+            "path": f"/ => {appdir.as_posix()}"
+        }
+
+        # Initiate mount
         if hasattr(platform.window, 'MM'):
             platform.window.MM.prepare(apk, json.dumps(cfg))
-        
-        # 2. Add Path
+
+        # Add to Python path
         if appdir.as_posix() not in sys.path:
             sys.path.append(appdir.as_posix())
 
-        # 3. Import Main
+        # Import game module
         import main
 
-        # 4. SIGNAL READY: Only now do we lift the curtain
-        try: platform.window.finishLoad()
-        except: pass
-
-        # 5. Run Game
-        await main.main()
-        
-    except Exception as e:
-        # If error, show it on the overlay text
+        # Signal JavaScript to reveal game
         try:
-             txt = platform.window.document.getElementById("status-text")
-             txt.innerText = str(e)
-             txt.style.color = "red"
-        except: print(e)
+            platform.window.finishLoad()
+        except:
+            pass
+
+        # Run game
+        await main.main()
+
+    except Exception as e:
+        print(f"[ERROR] {e}")
+
 # -->
     </script>
 </body>
