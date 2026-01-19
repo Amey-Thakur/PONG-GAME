@@ -151,7 +151,7 @@ def draw_background():
 			star[2] = random.uniform(0.2, 1.5)
 		color_val = int(star[2] * 80) + 40
 		pygame.draw.circle(screen, (color_val, color_val, color_val), (int(star[0]), int(star[1])), max(1, int(star[2] * 1.2)))
-	pygame.draw.rect(screen, (100, 100, 100), (2, 2, screen_width - 4, screen_height - 4), 4)
+	pygame.draw.rect(screen, (220, 220, 220), (2, 2, screen_width - 4, screen_height - 4), 4)
 
 async def main():
 	global player_speed, player_glow, opponent_glow, score_time, bg_rect
