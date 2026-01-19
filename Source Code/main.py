@@ -167,10 +167,6 @@ async def loading_screen():
 		await asyncio.sleep(0)
 		clock.tick(60)
 
-		pygame.display.flip()
-		await asyncio.sleep(0)
-		clock.tick(60)
-
 # System Setup
 pygame.mixer.pre_init(44100, -16, 2, 512)
 pygame.init()
