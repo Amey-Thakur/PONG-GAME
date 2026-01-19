@@ -93,6 +93,57 @@ def ball_start():
 		ball_speed_x = 7 * random.choice((1, -1))
 		score_time = None
 
+def draw_background():
+	screen.fill(bg_color)
+	# Draw subtle horizontal lines for texture
+	for i in range(0, screen_height, 40):
+		pygame.draw.line(screen, accent_color, (0, i), (screen_width, i), 1)
+
+async def loading_screen():
+	try:
+		icon = pygame.image.load("icon.png")
+		icon = pygame.transform.scale(icon, (300, 300))
+		icon_rect = icon.get_rect(center=(screen_width/2, screen_height/2 - 50))
+	except:
+		icon = None
+
+	start_time = pygame.time.get_ticks()
+	while True:
+		current_time = pygame.time.get_ticks()
+		elapsed = current_time - start_time
+		if elapsed > 3000: break # 3 second loading
+
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				pygame.quit()
+				sys.exit()
+
+		screen.fill(bg_color)
+		if icon:
+			screen.blit(icon, icon_rect)
+		
+		# Progress bar
+		bar_width = 400
+		bar_height = 10
+		bar_x = screen_width/2 - bar_width/2
+		bar_y = screen_height/2 + 150
+		
+		progress = min(elapsed / 2500, 1.0)
+		
+		# Draw background bar
+		pygame.draw.rect(screen, accent_color, (bar_x, bar_y, bar_width, bar_height), border_radius=5)
+		# Draw progress
+		pygame.draw.rect(screen, white, (bar_x, bar_y, bar_width * progress, bar_height), border_radius=5)
+		
+		# Loading Text
+		load_text = author_font.render("INITIALIZING PREMIUM EXPERIENCE...", True, (150, 150, 150))
+		load_rect = load_text.get_rect(center=(screen_width/2, bar_y + 40))
+		screen.blit(load_text, load_rect)
+
+		pygame.display.flip()
+		await asyncio.sleep(0)
+		clock.tick(60)
+
 # System Setup
 pygame.mixer.pre_init(44100, -16, 2, 512)
 pygame.init()
@@ -101,7 +152,11 @@ clock = pygame.time.Clock()
 screen_width = 1280
 screen_height = 960
 screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption('Pong - AMEY & MEGA')
+pygame.display.set_caption('AMEY & MEGA')
+try:
+	pygame.display.set_icon(pygame.image.load("icon.png"))
+except:
+	pass
 
 # Objects & Positioning
 ball = pygame.Rect(screen_width/2 - 15, screen_height/2 - 15, 30, 30)
@@ -109,11 +164,12 @@ player = pygame.Rect(screen_width - 20, screen_height/2 - 70, 10, 140)
 opponent = pygame.Rect(10, screen_height/2 - 70, 10, 140)
 
 # Colors
-bg_color = pygame.Color(0, 0, 0)
-ball_color = (255, 255, 255)
-line_color = (132, 132, 130)
-player_color = (0, 255, 0)
-opponent_color = (255, 0, 0)
+bg_color = (20, 20, 20)  # Deep charcoal
+accent_color = (40, 40, 40)
+ball_color = (240, 240, 240)
+line_color = (60, 60, 60)
+player_color = (0, 255, 127) # Spring Green
+opponent_color = (255, 69, 0) # Orange Red
 white = (255, 255, 255)
 
 # Game State
@@ -146,6 +202,8 @@ except:
 async def main():
 	global player_speed
 	
+	await loading_screen()
+	
 	while True:
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
@@ -164,7 +222,7 @@ async def main():
 		opponent_animation()
 		
 		# Rendering
-		screen.fill(bg_color)
+		draw_background()
 		
 		# Render Paddles with Kickback Animation
 		pygame.draw.rect(screen, player_color, (player.x + player_kickback, player.y, player.width, player.height))
