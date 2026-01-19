@@ -1,6 +1,10 @@
 # title: AMEY & MEGA
 # icon: icon.png
-import pygame, sys, random, asyncio, math
+import pygame, sys, random, asyncio, math, webbrowser
+try:
+    import platform
+except ImportError:
+    platform = None
 
 def ball_animation():
 	global ball_speed_x, ball_speed_y, player_score, opponent_score, score_time, player_kickback, opponent_kickback, player_glow, opponent_glow
@@ -242,6 +246,10 @@ async def main():
 	score_time = pygame.time.get_ticks()
 	
 	while True:
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				pygame.quit()
+				sys.exit()
 			if event.type == pygame.MOUSEBUTTONDOWN:
 				if bg_rect.collidepoint(event.pos):
 					github_url = "https://github.com/Amey-Thakur/PONG-GAME"
