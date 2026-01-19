@@ -6,7 +6,7 @@
     <style>
         body { margin: 0; padding: 0; background-color: #050505; color: #eee; overflow: hidden; font-family: sans-serif; user-select: none; -webkit-user-select: none; }
         
-        /* NUCLEAR OPTION: Full screen overlay to hide EVERYTHING including boot text */
+        /* Full screen overlay */
         #boot-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #050505; z-index: 99999999;
@@ -14,27 +14,31 @@
         }
 
         .logo-pulse {
-            width: 150px; height: 150px; margin-bottom: 30px;
+            width: 120px; height: 120px; margin-bottom: 30px;
             animation: pulse 2s infinite ease-in-out;
             background: url('icon.png') no-repeat center; background-size: contain;
         }
         @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.8; } }
 
         .loading-text {
-            font-size: 14px; color: #888; letter-spacing: 3px; text-transform: uppercase; margin-top: 20px;
+            font-size: 14px; color: #aaa; letter-spacing: 3px; text-transform: uppercase; margin-top: 15px; font-weight: bold;
         }
+
+        /* GAME BAR */
+        #progress-container { width: 300px; height: 6px; background: #222; margin-top: 20px; border-radius: 3px; overflow: hidden; }
+        #progress-fill { width: 0%; height: 100%; background: #00ff7f; transition: width 0.1s; } /* Spring Green */
 
         #canvas { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); outline: none; z-index: 10; }
         
-        /* Aggressively hide Pygbag artifacts */
-        #status, #output, #console, #loading { display: none !important; visibility: hidden !important; opacity: 0 !important; }
+        /* Hide Pygbag Console */
+        #status, #output, #console { display: none !important; visibility: hidden !important; }
     </style>
 </head>
 <body>
-    <!-- The Safety Curtain -->
     <div id="boot-overlay">
         <div class="logo-pulse"></div>
-        <div class="loading-text">Initializing Premium Experience...</div>
+        <div class="loading-text" id="status-text">INITIALIZING PONG GAME...</div>
+        <div id="progress-container"><div id="progress-fill"></div></div>
     </div>
 
     <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
@@ -48,11 +52,22 @@ import platform
 import json
 from pathlib import Path
 
-# Stub window if needed
+# Stub window
 if not hasattr(platform, 'window'):
     class MockWindow:
         def __getattr__(self, name): return None
     platform.window = MockWindow()
+
+def update_bar(percent):
+    try:
+        platform.window.document.getElementById("progress-fill").style.width = f"{percent}%"
+    except: pass
+
+def show_error(msg):
+    try:
+        platform.window.document.getElementById("status-text").innerText = f"ERROR: {msg}"
+        platform.window.document.getElementById("status-text").style.color = "#ff4500"
+    except: pass
 
 async def custom_site():
     try:
@@ -67,29 +82,32 @@ async def custom_site():
         if hasattr(platform.window, 'MM'):
             track = platform.window.MM.prepare(apk, json.dumps(cfg))
             while not track.ready:
-                await asyncio.sleep(0.1)
+                # Update Game Bar
+                if track.len > 0:
+                    p = int(track.pos / track.len * 100)
+                    update_bar(p)
+                await asyncio.sleep(0.05)
+        
+        update_bar(100)
+        await asyncio.sleep(0.2) # Short pause to see 100%
 
         # 2. Setup Path
         if appdir.as_posix() not in sys.path:
             sys.path.append(appdir.as_posix())
 
-        # 3. DROP THE CURTAIN: Only now do we remove the overlay
+        # 3. Remove Overlay
         try:
              platform.window.document.getElementById("boot-overlay").style.display = "none"
-        except: 
-             pass
+        except: pass
 
         # 4. Start Game
         import main
         await main.main()
 
     except Exception as e:
-        # In case of error, show it on the overlay text
-        try:
-            err_msg = str(e)
-            platform.window.document.querySelector(".loading-text").innerText = "ERROR: " + err_msg
-        except:
-             print(f"CRITICAL: {e}")
+        show_error(str(e))
+        import traceback
+        traceback.print_exc()
 
 # -->
     </script>
