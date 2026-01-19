@@ -86,11 +86,20 @@ loading_font = pygame.font.SysFont("segoeui", 14, bold=True)
 
 # Sound Effects
 try:
-    pong_sound  = pygame.mixer.Sound("sound/sfx_point.wav")
-    score_sound = pygame.mixer.Sound("sound/sfx_swooshing.wav")
+    paddle_sound = pygame.mixer.Sound("sound/sfx_point.wav")    # Paddle hit
+    goal_sound   = pygame.mixer.Sound("sound/sfx_swooshing.wav") # Goal scored
+    wall_sound   = pygame.mixer.Sound("sound/wall.wav")          # Wall bounce
+    beep_sound   = pygame.mixer.Sound("sound/beep.wav")          # Countdown beep
+    # Adjust volumes
+    paddle_sound.set_volume(0.5)
+    goal_sound.set_volume(0.8)
+    wall_sound.set_volume(0.3)
+    beep_sound.set_volume(0.6)
 except:
-    pong_sound  = None
-    score_sound = None
+    paddle_sound = None
+    goal_sound   = None
+    wall_sound   = None
+    beep_sound   = None
 
 # Icon
 try:
@@ -141,9 +150,10 @@ rally_count        = 0                 # Count paddle hits in current rally
 
 # Visual Effects State
 ball_trail         = []                # Stores last N ball positions for trail
-screen_shake       = 0                 # Frames remaining for screen shake
+goal_flash         = 0                 # Frames remaining for goal flash effect
 player_flash       = 0                 # Frames remaining for player paddle flash
 opponent_flash     = 0                 # Frames remaining for opponent paddle flash
+last_countdown     = 0                 # Track countdown number for beep sound
 
 
 # ============================================================================
@@ -221,33 +231,33 @@ def update_ball():
     if ball.top <= TOP_BORDER:
         ball.top = TOP_BORDER
         ball_velocity[1] *= -1
-        if pong_sound:
-            pong_sound.play()
+        if wall_sound:
+            wall_sound.play()
 
     if ball.bottom >= BOTTOM_BORDER:
         ball.bottom = BOTTOM_BORDER
         ball_velocity[1] *= -1
-        if pong_sound:
-            pong_sound.play()
+        if wall_sound:
+            wall_sound.play()
 
     # Scoring (left/right edges)
     if ball.left <= 0:
         player_score += 1
         score_time = pygame.time.get_ticks()
-        screen_shake = 10  # Trigger screen shake
+        goal_flash = 15  # Trigger goal flash effect
         rally_count = 0
-        current_ball_speed = BALL_SPEED_START  # Reset speed on score
-        if score_sound:
-            score_sound.play()
+        current_ball_speed = BALL_SPEED_START
+        if goal_sound:
+            goal_sound.play()
 
     if ball.right >= SCREEN_WIDTH:
         opponent_score += 1
         score_time = pygame.time.get_ticks()
-        screen_shake = 10
+        goal_flash = 15
         rally_count = 0
         current_ball_speed = BALL_SPEED_START
-        if score_sound:
-            score_sound.play()
+        if goal_sound:
+            goal_sound.play()
 
     # Paddle collisions with speed increase
     if ball.colliderect(player) and ball_velocity[0] > 0:
@@ -262,8 +272,8 @@ def update_ball():
         ball_velocity[1] = current_ball_speed * direction_y
         
         player_flash = 8  # Visual feedback
-        if pong_sound:
-            pong_sound.play()
+        if paddle_sound:
+            paddle_sound.play()
 
     if ball.colliderect(opponent) and ball_velocity[0] < 0:
         rally_count += 1
@@ -275,8 +285,8 @@ def update_ball():
         ball_velocity[1] = current_ball_speed * direction_y
         
         opponent_flash = 8
-        if pong_sound:
-            pong_sound.play()
+        if paddle_sound:
+            paddle_sound.play()
 
 
 def update_player():
@@ -322,7 +332,7 @@ def update_opponent():
 
 def reset_ball():
     """Handle countdown and ball reset after scoring."""
-    global ball_velocity, score_time, current_ball_speed
+    global ball_velocity, score_time, current_ball_speed, last_countdown
 
     ball.center = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
     player.centery = SCREEN_HEIGHT / 2
@@ -332,10 +342,13 @@ def reset_ball():
     elapsed = pygame.time.get_ticks() - score_time
 
     if elapsed < 700:
+        countdown_num = 3
         countdown_text = "3"
     elif elapsed < 1400:
+        countdown_num = 2
         countdown_text = "2"
     elif elapsed < 2100:
+        countdown_num = 1
         countdown_text = "1"
     else:
         # Start with slow speed
@@ -345,7 +358,14 @@ def reset_ball():
             current_ball_speed * random.choice((1, -1))
         ]
         score_time = None
+        last_countdown = 0
         return
+
+    # Play beep when countdown number changes
+    if countdown_num != last_countdown:
+        last_countdown = countdown_num
+        if beep_sound:
+            beep_sound.play()
 
     text_surface = game_font.render(countdown_text, True, COLOR_WHITE)
     screen.blit(text_surface, text_surface.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 50)))
@@ -357,18 +377,19 @@ def reset_ball():
 # ============================================================================
 
 def draw_background():
-    """Render the game background with optional screen shake."""
-    global screen_shake
+    """Render the game background with goal flash effect."""
+    global goal_flash
     
-    # Calculate shake offset
-    offset_x, offset_y = 0, 0
-    if screen_shake > 0:
-        offset_x = random.randint(-3, 3)
-        offset_y = random.randint(-3, 3)
-        screen_shake -= 1
+    # Goal flash creates a brief bright pulse
+    if goal_flash > 0:
+        flash_intensity = int(30 * (goal_flash / 15))  # Fades from 30 to 0
+        bg_color = (20 + flash_intensity, 20 + flash_intensity, 20 + flash_intensity)
+        goal_flash -= 1
+    else:
+        bg_color = COLOR_BACKGROUND
     
-    screen.fill(COLOR_BACKGROUND)
-    pygame.draw.rect(screen, COLOR_BORDER, (2 + offset_x, 2 + offset_y, SCREEN_WIDTH - 4, SCREEN_HEIGHT - 4), 4)
+    screen.fill(bg_color)
+    pygame.draw.rect(screen, COLOR_BORDER, (2, 2, SCREEN_WIDTH - 4, SCREEN_HEIGHT - 4), 4)
 
 
 def draw_center_line():
