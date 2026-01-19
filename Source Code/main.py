@@ -1,3 +1,5 @@
+# title: AMEY & MEGA
+# icon: icon.png
 import pygame, sys, random, asyncio
 
 def ball_animation():
