@@ -188,12 +188,12 @@ async def main():
 	player.centery = screen_height/2
 	opponent.centery = screen_height/2
 
-	# Loading Screen (Foolproof sequence)
+	# Loading Screen (Fast Startup)
 	start_ticks = pygame.time.get_ticks()
 	loading_active = True
 	while loading_active:
 		curr_ticks = pygame.time.get_ticks()
-		if curr_ticks - start_ticks > 3000:
+		if curr_ticks - start_ticks > 500: # Reduced from 3000ms for faster load
 			loading_active = False
 			break
 			
@@ -203,7 +203,7 @@ async def main():
 				sys.exit()
 		
 		elapsed = curr_ticks - start_ticks
-		progress = min(elapsed / 2500, 1.0)
+		progress = min(elapsed / 450, 1.0)
 		
 		draw_background()
 		if icon_orig:
