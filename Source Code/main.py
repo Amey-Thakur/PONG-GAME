@@ -283,13 +283,13 @@ async def main():
 		if score_time:
 			ball_start()
 
-		# HUD - Scores (Original Vertical Center Position)
+		# HUD - Scores (Original Proximity Style)
 		player_text = game_font.render(f"{player_score}", True, white)
-		player_rect = player_text.get_rect(center=(screen_width * 3/4, screen_height/2 - 10))
+		player_rect = player_text.get_rect(center=(screen_width/2 + 60, screen_height/2 - 10))
 		screen.blit(player_text, player_rect)
 		
 		opponent_text = game_font.render(f"{opponent_score}", True, white)
-		opponent_rect = opponent_text.get_rect(center=(screen_width * 1/4, screen_height/2 - 10))
+		opponent_rect = opponent_text.get_rect(center=(screen_width/2 - 60, screen_height/2 - 10))
 		screen.blit(opponent_text, opponent_rect)
 
 		# Footer - Authorship (Capsule Design)
