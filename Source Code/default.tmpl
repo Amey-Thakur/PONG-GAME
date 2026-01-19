@@ -3,8 +3,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>AMEY & MEGA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; padding: 0; background-color: #050505; color: #eee; overflow: hidden; font-family: sans-serif; user-select: none; -webkit-user-select: none; }
+        body { margin: 0; padding: 0; background-color: #050505; color: #eee; overflow: hidden; font-family: 'Roboto', sans-serif; user-select: none; -webkit-user-select: none; }
         
         /* Full screen overlay */
         #boot-overlay {
@@ -21,14 +22,14 @@
         @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.8; } }
 
         .loading-text {
-            font-size: 14px; color: #aaa; letter-spacing: 3px; text-transform: uppercase; margin-top: 15px; font-weight: bold;
+            font-size: 14px; color: #aaa; letter-spacing: 3px; text-transform: uppercase; margin-top: 20px; font-weight: bold;
         }
 
-        /* GAME BAR */
-        #progress-container { width: 300px; height: 6px; background: #222; margin-top: 20px; border-radius: 3px; overflow: hidden; }
+        /* GAME BAR - Apple Style (Above Text) */
+        #progress-container { width: 300px; height: 6px; background: #222; margin-top: 0px; border-radius: 3px; overflow: hidden; margin-bottom: 20px; }
         #progress-fill { width: 0%; height: 100%; background: #00ff7f; transition: width 0.1s; } /* Spring Green */
 
-        #canvas { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); outline: none; z-index: 10; }
+        #canvas { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); outline: none; z-index: 10; font-family: 'Roboto', sans-serif; }
         
         /* Hide Pygbag Console */
         #status, #output, #console { display: none !important; visibility: hidden !important; }
@@ -37,8 +38,8 @@
 <body>
     <div id="boot-overlay">
         <div class="logo-pulse"></div>
-        <div class="loading-text" id="status-text">INITIALIZING PONG GAME...</div>
         <div id="progress-container"><div id="progress-fill"></div></div>
+        <div class="loading-text" id="status-text">INITIALIZING PONG GAME...</div>
     </div>
 
     <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>

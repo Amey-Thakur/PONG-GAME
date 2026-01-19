@@ -24,8 +24,8 @@ RIGHT_BORD = 1274
 
 # Assets
 try:
-	game_font = pygame.font.Font("freesansbold.ttf", 32)
-	author_font = pygame.font.Font("freesansbold.ttf", 18)
+	game_font = pygame.font.SysFont("roboto", 32, bold=True)
+	author_font = pygame.font.SysFont("roboto", 18, bold=True)
 except:
 	game_font = pygame.font.Font(None, 32)
 	author_font = pygame.font.Font(None, 18)
