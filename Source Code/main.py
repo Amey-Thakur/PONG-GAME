@@ -56,14 +56,16 @@ BALL_SPEED_START  = 4                  # Start slow for easy gameplay
 BALL_SPEED_MAX    = 14                 # Maximum ball speed cap
 BALL_SPEED_INC    = 0.3                # Speed increase per paddle hit
 PLAYER_SPEED      = 7                  # Player paddle speed
-AI_SPEED          = 5                  # AI is slower than player (beatable!)
+AI_SPEED          = 7                  # AI matches player for fair play
 PADDLE_HEIGHT     = 140
 PADDLE_WIDTH      = 10
 BALL_SIZE         = 30
 
-# AI Behavior Settings
-AI_REACTION_ZONE  = SCREEN_WIDTH / 2   # AI only reacts when ball crosses center
-AI_MISTAKE_CHANCE = 0.03               # 3% chance of random mistake per frame
+# AI Behavior Settings - Adaptive Difficulty
+AI_REACTION_ZONE      = SCREEN_WIDTH / 2   # AI only reacts when ball crosses center
+AI_MISTAKE_START      = 0.15               # 15% mistake chance at game start (dumb)
+AI_MISTAKE_MIN        = 0.02               # 2% mistake at max skill (smart)
+AI_SKILL_UP_POINTS    = 5                  # AI gets smarter every 5 total points
 
 
 # ============================================================================
@@ -288,16 +290,21 @@ def update_opponent():
     Update opponent (AI) paddle position.
     
     AI Behavior:
-    - Only reacts when ball is on its side of the court (reaction zone)
-    - Moves slower than player (beatable)
-    - Occasionally makes random mistakes
+    - Matches player speed for fair play
+    - Starts dumb (high mistake chance) and gets smarter over time
+    - Only reacts when ball is on its side of the court
     """
     # Only react when ball is approaching (crosses center line)
     if ball.centerx > AI_REACTION_ZONE:
         return  # Ball is on player's side, AI rests
     
+    # Calculate adaptive mistake chance based on total points scored
+    total_points = player_score + opponent_score
+    skill_level = min(total_points / AI_SKILL_UP_POINTS, 1.0)  # 0 to 1
+    current_mistake_chance = AI_MISTAKE_START - (AI_MISTAKE_START - AI_MISTAKE_MIN) * skill_level
+    
     # Random mistake: occasionally move wrong direction
-    if random.random() < AI_MISTAKE_CHANCE:
+    if random.random() < current_mistake_chance:
         # Make a mistake - move away from ball briefly
         if opponent.centery < ball.centery:
             opponent.y -= AI_SPEED
@@ -373,15 +380,21 @@ def draw_center_line():
 
 
 def draw_ball_trail():
-    """Render ball trail effect for visual feedback."""
-    for i, pos in enumerate(ball_trail):
-        # Fade alpha based on position in trail
-        alpha = int(255 * (i + 1) / len(ball_trail) * 0.3)
-        size = int(BALL_SIZE * (i + 1) / len(ball_trail) * 0.8)
-        if size > 2:
-            trail_surface = pygame.Surface((size, size), pygame.SRCALPHA)
-            pygame.draw.ellipse(trail_surface, (*COLOR_BALL[:3], alpha), (0, 0, size, size))
-            screen.blit(trail_surface, (pos[0] - size // 2, pos[1] - size // 2))
+    """Render smooth glow trail behind the ball."""
+    if len(ball_trail) < 2:
+        return
+    
+    # Draw glowing trail using connected circles with fade
+    for i in range(len(ball_trail) - 1):
+        progress = (i + 1) / len(ball_trail)
+        alpha = int(40 * progress)  # Subtle glow
+        radius = int(BALL_SIZE / 2 * progress * 0.6)
+        
+        if radius > 1:
+            glow_surface = pygame.Surface((radius * 4, radius * 4), pygame.SRCALPHA)
+            pygame.draw.circle(glow_surface, (255, 255, 255, alpha), (radius * 2, radius * 2), radius)
+            pos = ball_trail[i]
+            screen.blit(glow_surface, (pos[0] - radius * 2, pos[1] - radius * 2))
 
 
 def draw_paddles():
