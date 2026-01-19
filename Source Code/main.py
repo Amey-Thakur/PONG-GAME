@@ -97,24 +97,29 @@ def ball_start():
 		ball_speed_x = 7 * random.choice((1, -1))
 		score_time = None
 
-bg_offset = 0
+# Initialize Stars for Parallax Starfield
+stars = []
+for _ in range(100):
+	# [x, y, speed, depth/brightness]
+	stars.append([random.randint(0, screen_width), random.randint(0, screen_height), random.uniform(0.2, 1.5)])
+
 def draw_background():
-	global bg_offset
 	screen.fill(bg_color)
 	
-	# Draw animated moving grid
-	bg_offset = (bg_offset + 0.5) % 80
-	# Secondary grid for depth
-	for k in range(-80 + int(bg_offset/2), screen_height + 80, 160):
-		pygame.draw.line(screen, (30, 30, 30), (0, k), (screen_width, k), 1)
-
-	for i in range(-80 + int(bg_offset), screen_height + 80, 80):
-		# Horizontal moving lines
-		pygame.draw.line(screen, accent_color, (0, i), (screen_width, i), 1)
-	
-	for j in range(0, screen_width, 80):
-		# Vertical static lines
-		pygame.draw.line(screen, accent_color, (j, 0), (j, screen_height), 1)
+	for star in stars:
+		# Move star
+		star[1] += star[2]
+		if star[1] > screen_height:
+			star[1] = 0
+			star[0] = random.randint(0, screen_width)
+			star[2] = random.uniform(0.2, 1.5)
+		
+		# Determine color based on speed (depth)
+		color_val = int(star[2] * 80) + 40
+		color = (color_val, color_val, color_val)
+		
+		# Draw star
+		pygame.draw.circle(screen, color, (int(star[0]), int(star[1])), max(1, int(star[2] * 1.2)))
 
 async def loading_screen():
 	try:
