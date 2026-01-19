@@ -1,0 +1,80 @@
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>AMEY & MEGA</title>
+    <style>
+        body { background-color: #050505; color: #eeeeee; margin: 0; padding: 0; overflow: hidden; font-family: sans-serif; }
+        #webgl-loader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: #050505; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 999999;
+        }
+        .logo-pulse {
+            width: 300px; height: 300px; margin-bottom: 20px;
+            animation: pulse 2s infinite ease-in-out;
+            background: url('icon.png') no-repeat center; background-size: contain;
+        }
+        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.05); opacity: 1; } }
+        .progress-container { width: 460px; height: 6px; background: #282828; border-radius: 10px; overflow: hidden; }
+        #progress-bar { width: 0%; height: 100%; background: #ffffff; transition: width 0.2s; }
+        .loading-text { margin-top: 15px; font-size: 14px; color: #888888; letter-spacing: 2px; text-transform: uppercase; }
+        #canvas { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); visibility: hidden; z-index: 10; }
+    </style>
+</head>
+<body>
+    <div id="webgl-loader">
+        <div class="logo-pulse"></div>
+        <div class="progress-container"><div id="progress-bar"></div></div>
+        <div class="loading-text">Initializing Arcade Core...</div>
+    </div>
+    
+    <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+
+    <script src="https://pygame-web.github.io/archives/0.9/pythons.js" 
+            type="module" id="site" data-python="python3.12" data-os="vtx,fs,snd,gui" 
+            data-CONSOLE="0" async defer>#<!--
+
+import sys
+import asyncio
+import platform
+import json
+from pathlib import Path
+
+async def custom_site():
+    import pygame
+    
+    def update_progress(pos, total):
+        try:
+            p = int((pos / (total or 1)) * 100)
+            platform.window.document.getElementById("progress-bar").style.width = f"{p}%"
+        except: pass
+
+    apk = "{{cookiecutter.archive}}.apk"
+    bundle = "{{cookiecutter.archive}}"
+    appdir = Path(f"/data/data/{bundle}")
+    appdir.mkdir(parents=True, exist_ok=True)
+
+    cfg = {"io":"url", "type":"mount", "mount":{"point":appdir.as_posix(), "path":"/"}, "path":f"/ => {appdir.as_posix()}"}
+    track = platform.window.MM.prepare(apk, json.dumps(cfg))
+
+    while not track.ready:
+        update_progress(track.pos, track.len)
+        await asyncio.sleep(.01)
+
+    update_progress(100, 100)
+    
+    # Switch to Game
+    platform.window.document.getElementById("webgl-loader").style.display = "none"
+    platform.window.canvas.style.visibility = "visible"
+
+    if appdir.as_posix() not in sys.path:
+        sys.path.append(appdir.as_posix())
+    
+    import main
+    await main.main()
+
+# -->
+    </script>
+</body>
+</html>
