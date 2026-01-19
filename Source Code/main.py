@@ -97,11 +97,6 @@ def ball_start():
 		ball_speed_x = 7 * random.choice((1, -1))
 		score_time = None
 
-# Initialize Stars for Parallax Starfield
-stars = []
-for _ in range(100):
-	# [x, y, speed, depth/brightness]
-	stars.append([random.randint(0, screen_width), random.randint(0, screen_height), random.uniform(0.2, 1.5)])
 
 def draw_background():
 	screen.fill(bg_color)
@@ -181,6 +176,13 @@ screen_width = 1280
 screen_height = 960
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('AMEY & MEGA')
+
+# Initialize Stars for Parallax Starfield
+stars = []
+for _ in range(100):
+	# [x, y, speed, depth/brightness]
+	stars.append([random.randint(0, screen_width), random.randint(0, screen_height), random.uniform(0.2, 1.5)])
+
 try:
 	pygame.display.set_icon(pygame.image.load("icon.png"))
 except:
