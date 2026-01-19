@@ -12,6 +12,8 @@
             border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px auto;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* Hide Default Pygbag UI Artifacts */
+        #status, #output, #console { display: none !important; }
     </style>
 </head>
 <body>
@@ -22,7 +24,7 @@
     <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
 
     <script src="https://pygame-web.github.io/archives/0.9/pythons.js" 
-            type=module id=site data-python="python3.11" data-os="vtx,fs,snd,gui" async defer>
+            type=module id=site data-python="python3.11" data-os="vtx,fs,snd,gui" data-CONSOLE="0" async defer>
 #<!--
 import sys
 import asyncio

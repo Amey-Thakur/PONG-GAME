@@ -271,9 +271,9 @@ async def main():
 		if score_time: ball_start()
 
 		# HUD - Scores
-		pt = game_font.render(f"{player_score}", True, white)
+		pt = game_font.render(f"{player_score}", True, player_color)
 		screen.blit(pt, pt.get_rect(center=(screen_width/2 + 65, screen_height/2)))
-		ot = game_font.render(f"{opponent_score}", True, white)
+		ot = game_font.render(f"{opponent_score}", True, opponent_color)
 		screen.blit(ot, ot.get_rect(center=(screen_width/2 - 65, screen_height/2)))
 
 		# Footer
