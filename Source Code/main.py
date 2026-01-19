@@ -464,10 +464,15 @@ def draw_scores():
 
 
 def draw_rally_counter():
-    """Display current rally count and ball speed."""
+    """Display rally count on left, speed on right of center line."""
     if rally_count > 0:
-        rally_text = loading_font.render(f"Rally: {rally_count}  Speed: {current_ball_speed:.1f}", True, (100, 100, 100))
-        screen.blit(rally_text, rally_text.get_rect(center=(SCREEN_WIDTH / 2, 30)))
+        # Rally on left side of center line
+        rally_text = loading_font.render(f"Rally: {rally_count}", True, (100, 100, 100))
+        screen.blit(rally_text, rally_text.get_rect(midright=(SCREEN_WIDTH / 2 - 20, 30)))
+        
+        # Speed on right side of center line
+        speed_text = loading_font.render(f"Speed: {current_ball_speed:.1f}", True, (100, 100, 100))
+        screen.blit(speed_text, speed_text.get_rect(midleft=(SCREEN_WIDTH / 2 + 20, 30)))
 
 
 def draw_footer():
