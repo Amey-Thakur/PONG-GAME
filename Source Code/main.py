@@ -84,35 +84,34 @@ game_font    = pygame.font.SysFont("segoeui", 32, bold=True)
 author_font  = pygame.font.SysFont("segoeui", 18, bold=True)
 loading_font = pygame.font.SysFont("segoeui", 14, bold=True)
 
-# Sound Effects
+# Sound Effects - Using OGG format for browser compatibility
 paddle_sound = None
 goal_sound   = None
-wall_sound   = None
 beep_sound   = None
 
-try:
-    paddle_sound = pygame.mixer.Sound("sound/sfx_point.wav")
-    paddle_sound.set_volume(0.6)
-except Exception as e:
-    print(f"Could not load paddle sound: {e}")
+def load_sounds():
+    """Load sounds with fallback. Must be OGG for Pygbag browser support."""
+    global paddle_sound, goal_sound, beep_sound
+    
+    try:
+        paddle_sound = pygame.mixer.Sound("sound/paddle.ogg")
+        paddle_sound.set_volume(0.5)
+    except:
+        pass
+    
+    try:
+        goal_sound = pygame.mixer.Sound("sound/goal.ogg")
+        goal_sound.set_volume(0.7)
+    except:
+        pass
+    
+    try:
+        beep_sound = pygame.mixer.Sound("sound/beep.ogg")
+        beep_sound.set_volume(0.5)
+    except:
+        pass
 
-try:
-    goal_sound = pygame.mixer.Sound("sound/sfx_swooshing.wav")
-    goal_sound.set_volume(0.8)
-except Exception as e:
-    print(f"Could not load goal sound: {e}")
-
-try:
-    wall_sound = pygame.mixer.Sound("sound/wall.wav")
-    wall_sound.set_volume(0.4)
-except Exception as e:
-    print(f"Could not load wall sound: {e}")
-
-try:
-    beep_sound = pygame.mixer.Sound("sound/beep.wav")
-    beep_sound.set_volume(0.6)
-except Exception as e:
-    print(f"Could not load beep sound: {e}")
+load_sounds()
 
 # Icon
 try:
@@ -168,6 +167,9 @@ player_flash       = 0                 # Frames remaining for player paddle flas
 opponent_flash     = 0                 # Frames remaining for opponent paddle flash
 last_countdown     = 0                 # Track countdown number for beep sound
 ai_mistake_timer   = 0                 # Frames remaining for AI to commit to mistake
+goal_particles     = []                # Celebration particles on goal
+player_score_glow  = 0                 # Frames for player score glow
+opponent_score_glow = 0                # Frames for opponent score glow
 
 
 # ============================================================================
@@ -241,35 +243,46 @@ def update_ball():
     if len(ball_trail) > 8:
         ball_trail.pop(0)
 
-    # Wall collisions (top/bottom)
+    # Wall collisions (top/bottom) - no sound, just visual bounce
     if ball.top <= TOP_BORDER:
         ball.top = TOP_BORDER
         ball_velocity[1] *= -1
-        if wall_sound:
-            wall_sound.play()
 
     if ball.bottom >= BOTTOM_BORDER:
         ball.bottom = BOTTOM_BORDER
         ball_velocity[1] *= -1
-        if wall_sound:
-            wall_sound.play()
 
     # Scoring (left/right edges)
     if ball.left <= 0:
         player_score += 1
+        player_score_glow = 20  # Trigger score glow
         score_time = pygame.time.get_ticks()
-        goal_flash = 15  # Trigger goal flash effect
+        goal_flash = 15
         rally_count = 0
         current_ball_speed = BALL_SPEED_START
+        # Spawn celebration particles
+        for _ in range(12):
+            goal_particles.append({
+                'x': SCREEN_WIDTH / 4, 'y': SCREEN_HEIGHT / 2,
+                'vx': random.uniform(-3, 3), 'vy': random.uniform(-4, 2),
+                'life': random.randint(20, 40), 'color': COLOR_PLAYER
+            })
         if goal_sound:
             goal_sound.play()
 
     if ball.right >= SCREEN_WIDTH:
         opponent_score += 1
+        opponent_score_glow = 20
         score_time = pygame.time.get_ticks()
         goal_flash = 15
         rally_count = 0
         current_ball_speed = BALL_SPEED_START
+        for _ in range(12):
+            goal_particles.append({
+                'x': 3 * SCREEN_WIDTH / 4, 'y': SCREEN_HEIGHT / 2,
+                'vx': random.uniform(-3, 3), 'vy': random.uniform(-4, 2),
+                'life': random.randint(20, 40), 'color': COLOR_OPPONENT
+            })
         if goal_sound:
             goal_sound.play()
 
@@ -420,6 +433,25 @@ def draw_center_line():
         pygame.draw.line(screen, COLOR_LINE, (SCREEN_WIDTH / 2, y), (SCREEN_WIDTH / 2, end_y), 2)
 
 
+def draw_goal_particles():
+    """Render and update celebration particles on goal."""
+    for particle in goal_particles[:]:
+        particle['x'] += particle['vx']
+        particle['y'] += particle['vy']
+        particle['vy'] += 0.15  # Gravity
+        particle['life'] -= 1
+        
+        if particle['life'] <= 0:
+            goal_particles.remove(particle)
+        else:
+            alpha = int(255 * (particle['life'] / 40))
+            size = max(2, int(6 * (particle['life'] / 40)))
+            surf = pygame.Surface((size * 2, size * 2), pygame.SRCALPHA)
+            color = (*particle['color'][:3], alpha)
+            pygame.draw.circle(surf, color, (size, size), size)
+            screen.blit(surf, (particle['x'] - size, particle['y'] - size))
+
+
 def draw_ball_trail():
     """Render smooth glow trail behind the ball."""
     if len(ball_trail) < 2:
@@ -469,10 +501,31 @@ def draw_ball():
 
 
 def draw_scores():
-    """Render the score display."""
-    player_text = game_font.render(str(player_score), True, COLOR_PLAYER)
-    opponent_text = game_font.render(str(opponent_score), True, COLOR_OPPONENT)
+    """Render the score display with glow effect."""
+    global player_score_glow, opponent_score_glow
+    
+    # Player score with glow
+    if player_score_glow > 0:
+        glow_intensity = int(100 * (player_score_glow / 20))
+        glow_color = (min(255, COLOR_PLAYER[0] + glow_intensity),
+                      min(255, COLOR_PLAYER[1] + glow_intensity),
+                      min(255, COLOR_PLAYER[2] + glow_intensity))
+        player_score_glow -= 1
+    else:
+        glow_color = COLOR_PLAYER
+    player_text = game_font.render(str(player_score), True, glow_color)
     screen.blit(player_text, player_text.get_rect(center=(SCREEN_WIDTH / 2 + 65, SCREEN_HEIGHT / 2)))
+    
+    # Opponent score with glow
+    if opponent_score_glow > 0:
+        glow_intensity = int(100 * (opponent_score_glow / 20))
+        glow_color = (min(255, COLOR_OPPONENT[0] + glow_intensity),
+                      min(255, COLOR_OPPONENT[1] + glow_intensity),
+                      min(255, COLOR_OPPONENT[2] + glow_intensity))
+        opponent_score_glow -= 1
+    else:
+        glow_color = COLOR_OPPONENT
+    opponent_text = game_font.render(str(opponent_score), True, glow_color)
     screen.blit(opponent_text, opponent_text.get_rect(center=(SCREEN_WIDTH / 2 - 65, SCREEN_HEIGHT / 2)))
 
 
@@ -553,6 +606,7 @@ async def main():
             reset_ball()
 
         draw_scores()
+        draw_goal_particles()
         draw_rally_counter()
         draw_footer()
 
