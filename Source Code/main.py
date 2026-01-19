@@ -18,6 +18,7 @@ import pygame
 import sys
 import random
 import asyncio
+import math
 import webbrowser
 
 try:
@@ -34,7 +35,7 @@ SCREEN_WIDTH  = 1280
 SCREEN_HEIGHT = 720
 FPS           = 60
 
-# Boundary Constants (Inner edges of 4px border)
+# Boundary Constants
 TOP_BORDER    = 6
 BOTTOM_BORDER = 714
 LEFT_BORDER   = 6
@@ -43,8 +44,8 @@ RIGHT_BORDER  = 1274
 # Color Palette
 COLOR_BACKGROUND  = (20, 20, 20)
 COLOR_BALL        = (240, 240, 240)
-COLOR_PLAYER      = (0, 255, 127)    # Spring Green
-COLOR_OPPONENT    = (255, 69, 0)     # Orange Red
+COLOR_PLAYER      = (0, 255, 127)
+COLOR_OPPONENT    = (255, 69, 0)
 COLOR_WHITE       = (255, 255, 255)
 COLOR_BORDER      = (220, 220, 220)
 COLOR_LINE        = (80, 80, 80)
@@ -68,9 +69,10 @@ clock = pygame.time.Clock()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('AMEY & MEGA')
 
-# Fonts
-game_font   = pygame.font.SysFont("arial", 32, bold=True)
-author_font = pygame.font.SysFont("arial", 18, bold=True)
+# Fonts - Using clean sans-serif for Google Play aesthetic
+game_font   = pygame.font.SysFont("segoeui", 32, bold=True)
+author_font = pygame.font.SysFont("segoeui", 18, bold=True)
+loading_font = pygame.font.SysFont("segoeui", 14, bold=True)
 
 # Sound Effects
 try:
@@ -127,6 +129,64 @@ footer_rect       = pygame.Rect(0, 0, 0, 0)
 
 
 # ============================================================================
+# LOADING SCREEN
+# ============================================================================
+
+async def show_loading_screen():
+    """Display premium Apple-style loading screen."""
+    start_time = pygame.time.get_ticks()
+    duration = 2500  # 2.5 seconds
+    
+    while True:
+        current_time = pygame.time.get_ticks()
+        elapsed = current_time - start_time
+        
+        if elapsed >= duration:
+            break
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+        
+        progress = min(elapsed / duration, 1.0)
+        
+        # Background
+        screen.fill((5, 5, 5))
+        
+        # Icon with pulse effect
+        if icon_image:
+            pulse = 1.0 + 0.03 * math.sin(current_time * 0.006)
+            size = int(120 * pulse)
+            icon = pygame.transform.smoothscale(icon_image, (size, size))
+            icon_rect = icon.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 50))
+            screen.blit(icon, icon_rect)
+        
+        # Progress bar
+        bar_width = 300
+        bar_height = 4
+        bar_x = (SCREEN_WIDTH - bar_width) / 2
+        bar_y = SCREEN_HEIGHT / 2 + 40
+        
+        # Background bar
+        pygame.draw.rect(screen, (34, 34, 34), (bar_x, bar_y, bar_width, bar_height), border_radius=2)
+        
+        # Fill bar
+        fill_width = int(bar_width * progress)
+        if fill_width > 0:
+            pygame.draw.rect(screen, COLOR_WHITE, (bar_x, bar_y, fill_width, bar_height), border_radius=2)
+        
+        # Loading text
+        text = loading_font.render("INITIALIZING PONG GAME...", True, (170, 170, 170))
+        text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, bar_y + 35))
+        screen.blit(text, text_rect)
+        
+        pygame.display.flip()
+        await asyncio.sleep(0)
+        clock.tick(FPS)
+
+
+# ============================================================================
 # GAME LOGIC
 # ============================================================================
 
@@ -137,7 +197,6 @@ def update_ball():
     ball.x += ball_velocity[0]
     ball.y += ball_velocity[1]
 
-    # Wall Collisions (Top/Bottom)
     if ball.top <= TOP_BORDER:
         ball.top = TOP_BORDER
         ball_velocity[1] *= -1
@@ -150,7 +209,6 @@ def update_ball():
         if pong_sound:
             pong_sound.play()
 
-    # Scoring (Left/Right)
     if ball.left <= 0:
         player_score += 1
         score_time = pygame.time.get_ticks()
@@ -163,7 +221,6 @@ def update_ball():
         if score_sound:
             score_sound.play()
 
-    # Paddle Collisions
     if ball.colliderect(player) and ball_velocity[0] > 0:
         ball_velocity[0] *= -1
         if pong_sound:
@@ -277,13 +334,15 @@ async def main():
     """Main game entry point."""
     global player_velocity, score_time, footer_rect
 
+    # Show loading screen first
+    await show_loading_screen()
+
     # Initialize positions
     player.centery = SCREEN_HEIGHT / 2
     opponent.centery = SCREEN_HEIGHT / 2
     score_time = pygame.time.get_ticks()
 
     while True:
-        # Event Handling
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -309,12 +368,10 @@ async def main():
                 if event.key == pygame.K_UP:
                     player_velocity += PADDLE_SPEED
 
-        # Game Logic
         update_ball()
         update_player()
         update_opponent()
 
-        # Rendering
         draw_background()
         draw_center_line()
         draw_paddles()
@@ -326,7 +383,6 @@ async def main():
         draw_scores()
         draw_footer()
 
-        # Display Update
         pygame.display.flip()
         await asyncio.sleep(0)
         clock.tick(FPS)
