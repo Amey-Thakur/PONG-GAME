@@ -12,11 +12,11 @@
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: #050505; z-index: 1000;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            transition: opacity 0.3s;
+            transition: opacity 0.5s;
         }
 
         .logo {
-            width: 100px; height: 100px; margin-bottom: 25px;
+            width: 120px; height: 120px; margin-bottom: 30px;
             background: url('icon.png') no-repeat center; background-size: contain;
         }
 
@@ -25,11 +25,15 @@
         }
 
         #progress-container { width: 300px; height: 4px; background: #222; border-radius: 2px; overflow: hidden; }
-        #progress-fill { width: 0%; height: 100%; background: #ffffff; transition: width 0.2s; } 
+        #progress-fill { 
+            width: 0%; height: 100%; background: #ffffff; 
+            /* CSS Animation: 0% to 90% in 10 seconds. Never gets stuck. */
+            animation: load 8s cubic-bezier(0.1, 0.7, 1.0, 0.1) forwards; 
+        }
+        
+        @keyframes load { 0% { width: 0%; } 100% { width: 90%; } }
 
         #canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; outline: none; }
-        
-        /* Stop Console Flash */
         #status, #output, #console { display: none !important; }
     </style>
 </head>
@@ -43,26 +47,25 @@
     <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
 
     <script>
-        // Set bar width from Python
-        window.setBar = function(percent) {
-            document.getElementById('progress-fill').style.width = percent + '%';
-        };
-
-        // Finish load
         window.finishLoad = function() {
-            window.setBar(100);
+            const bar = document.getElementById('progress-fill');
+            const overlay = document.getElementById('boot-overlay');
+            // Snap to 100%
+            bar.style.animation = 'none';
+            bar.style.width = '100%';
+            // Hide
             setTimeout(() => {
-                const overlay = document.getElementById('boot-overlay');
                 overlay.style.opacity = '0';
-                setTimeout(() => overlay.style.display = 'none', 300);
+                setTimeout(() => overlay.style.display = 'none', 500);
             }, 200);
         };
-
-        // Show Error
+        
+        // Critical Error Handler
         window.showError = function(msg) {
             const txt = document.getElementById('status-text');
             txt.innerText = "ERROR: " + msg;
             txt.style.color = "#ff4444";
+            document.getElementById('progress-container').style.display = 'none';
         };
     </script>
 
@@ -83,7 +86,7 @@ if not hasattr(platform, 'window'):
 
 async def custom_site():
     try:
-        # 1. Start Mount
+        # 1. Mount Archive
         apk = "{{cookiecutter.archive}}.apk"
         bundle = "{{cookiecutter.archive}}"
         appdir = Path(f"/data/data/{bundle}")
@@ -92,33 +95,27 @@ async def custom_site():
         cfg = {"io": "url", "type": "mount", "mount": {"point": appdir.as_posix(), "path": "/"}, "path": f"/ => {appdir.as_posix()}"}
         
         if hasattr(platform.window, 'MM'):
-            track = platform.window.MM.prepare(apk, json.dumps(cfg))
-            
-            # MANDATORY WAIT LOOP: Wait for download to actually finish
-            while not track.ready:
-                # Update bar based on real download progress
-                if track.len > 0:
-                    percent = int(track.pos / track.len * 100)
-                    try: platform.window.setBar(percent)
-                    except: pass
-                await asyncio.sleep(0.1)
+            platform.window.MM.prepare(apk, json.dumps(cfg))
         
         # 2. Add Path
         if appdir.as_posix() not in sys.path:
             sys.path.append(appdir.as_posix())
 
-        # 3. Import & Launch
+        # 3. SAFETY WAIT: Give 3 seconds for mount to stabilize
+        # This is safer than a potentially infinite 'while not ready' loop
+        await asyncio.sleep(3.0)
+
+        # 4. Import & Launch
         import main
         
-        # 4. Success -> Lift Curtain
+        # 5. Success
         try: platform.window.finishLoad()
         except: pass
 
         await main.main()
 
     except Exception as e:
-        # Critical: Show error to user
-        try: platform.window.showError(str(e))
+        try: platform.window.showError(f"{e}")
         except: print(e)
 
 # -->
