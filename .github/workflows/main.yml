@@ -26,7 +26,7 @@ jobs:
 
       - name: Build with Pygbag
         run: |
-          python -m pygbag --build "Source Code"
+          python -m pygbag --build --template "Source Code/default.tmpl" "Source Code"
 
       - name: Prepare for Deployment
         run: |
