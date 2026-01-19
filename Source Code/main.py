@@ -61,11 +61,11 @@ PADDLE_HEIGHT     = 140
 PADDLE_WIDTH      = 10
 BALL_SIZE         = 30
 
-# AI Behavior Settings - Adaptive Difficulty
+# AI Behavior Settings - Natural Difficulty
 AI_REACTION_ZONE      = SCREEN_WIDTH / 2   # AI only reacts when ball crosses center
-AI_MISTAKE_START      = 0.15               # 15% mistake chance at game start (dumb)
-AI_MISTAKE_MIN        = 0.02               # 2% mistake at max skill (smart)
-AI_SKILL_UP_POINTS    = 5                  # AI gets smarter every 5 total points
+AI_MISTAKE_START      = 0.04               # 4% mistake chance at game start
+AI_MISTAKE_MIN        = 0.01               # 1% mistake at max skill
+AI_SKILL_UP_POINTS    = 10                 # AI gets smarter every 10 total points
 
 
 # ============================================================================
@@ -85,21 +85,34 @@ author_font  = pygame.font.SysFont("segoeui", 18, bold=True)
 loading_font = pygame.font.SysFont("segoeui", 14, bold=True)
 
 # Sound Effects
+paddle_sound = None
+goal_sound   = None
+wall_sound   = None
+beep_sound   = None
+
 try:
-    paddle_sound = pygame.mixer.Sound("sound/sfx_point.wav")    # Paddle hit
-    goal_sound   = pygame.mixer.Sound("sound/sfx_swooshing.wav") # Goal scored
-    wall_sound   = pygame.mixer.Sound("sound/wall.wav")          # Wall bounce
-    beep_sound   = pygame.mixer.Sound("sound/beep.wav")          # Countdown beep
-    # Adjust volumes
-    paddle_sound.set_volume(0.5)
+    paddle_sound = pygame.mixer.Sound("sound/sfx_point.wav")
+    paddle_sound.set_volume(0.6)
+except Exception as e:
+    print(f"Could not load paddle sound: {e}")
+
+try:
+    goal_sound = pygame.mixer.Sound("sound/sfx_swooshing.wav")
     goal_sound.set_volume(0.8)
-    wall_sound.set_volume(0.3)
+except Exception as e:
+    print(f"Could not load goal sound: {e}")
+
+try:
+    wall_sound = pygame.mixer.Sound("sound/wall.wav")
+    wall_sound.set_volume(0.4)
+except Exception as e:
+    print(f"Could not load wall sound: {e}")
+
+try:
+    beep_sound = pygame.mixer.Sound("sound/beep.wav")
     beep_sound.set_volume(0.6)
-except:
-    paddle_sound = None
-    goal_sound   = None
-    wall_sound   = None
-    beep_sound   = None
+except Exception as e:
+    print(f"Could not load beep sound: {e}")
 
 # Icon
 try:
@@ -325,8 +338,8 @@ def update_opponent():
         skill_level = min(total_points / AI_SKILL_UP_POINTS, 1.0)
         current_mistake_chance = AI_MISTAKE_START - (AI_MISTAKE_START - AI_MISTAKE_MIN) * skill_level
         
-        if random.random() < current_mistake_chance * 0.1:  # Less frequent, longer duration
-            ai_mistake_timer = random.randint(15, 30)  # Commit to mistake for 15-30 frames
+        if random.random() < current_mistake_chance * 0.05:  # Very rare mistakes
+            ai_mistake_timer = random.randint(8, 15)  # Short mistake duration
         else:
             # Normal tracking behavior (smooth)
             if opponent.centery < ball.centery - 5:  # Dead zone to prevent jitter
