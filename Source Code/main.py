@@ -153,6 +153,22 @@ def draw_background():
 		pygame.draw.circle(screen, (color_val, color_val, color_val), (int(star[0]), int(star[1])), max(1, int(star[2] * 1.2)))
 	pygame.draw.rect(screen, (220, 220, 220), (2, 2, screen_width - 4, screen_height - 4), 4)
 
+def draw_center_line():
+	# Creative Neon Pulsing Dashed Line
+	current_time = pygame.time.get_ticks()
+	pulse = (math.sin(current_time * 0.005) + 1) / 2 # 0 to 1
+	glow_val = int(30 + 40 * pulse)
+	
+	# Draw dashed energized segments
+	segment_length = 20
+	gap_length = 15
+	for y in range(0, screen_height, segment_length + gap_length):
+		# Outer Glow (Energy Bloom)
+		glow_color = (glow_val, glow_val, glow_val)
+		pygame.draw.line(screen, glow_color, (screen_width/2, y), (screen_width/2, y + segment_length), 6)
+		# Inner Core
+		pygame.draw.line(screen, (200, 200, 200), (screen_width/2, y), (screen_width/2, y + segment_length), 2)
+
 async def main():
 	global player_speed, player_glow, opponent_glow, score_time, bg_rect
 	
@@ -225,7 +241,7 @@ async def main():
 		pygame.draw.rect(screen, opponent_color, (opponent.x + opponent_kickback, opponent.y, opponent.width, opponent.height), border_radius=2)
 		
 		pygame.draw.ellipse(screen, ball_color, ball)
-		pygame.draw.aaline(screen, line_color, (screen_width/2, 0), (screen_width/2, screen_height))
+		draw_center_line()
 
 		if score_time: ball_start()
 
