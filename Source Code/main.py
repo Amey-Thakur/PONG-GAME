@@ -154,20 +154,17 @@ def draw_background():
 	pygame.draw.rect(screen, (220, 220, 220), (2, 2, screen_width - 4, screen_height - 4), 4)
 
 def draw_center_line():
-	# Creative Neon Pulsing Dashed Line
-	current_time = pygame.time.get_ticks()
-	pulse = (math.sin(current_time * 0.005) + 1) / 2 # 0 to 1
-	glow_val = int(30 + 40 * pulse)
+	# Gapped Minimalist Line for maximum clarity
+	# We leave a gap in the center where the ball spawns and countdown shows
+	gap_size = 200 # Total vertical gap
+	segment_length = 15
+	gap_length = 10
+	line_color_muted = (80, 80, 80)
 	
-	# Draw dashed energized segments
-	segment_length = 20
-	gap_length = 15
 	for y in range(0, screen_height, segment_length + gap_length):
-		# Outer Glow (Energy Bloom)
-		glow_color = (glow_val, glow_val, glow_val)
-		pygame.draw.line(screen, glow_color, (screen_width/2, y), (screen_width/2, y + segment_length), 6)
-		# Inner Core
-		pygame.draw.line(screen, (200, 200, 200), (screen_width/2, y), (screen_width/2, y + segment_length), 2)
+		# Only draw if outside the central gap
+		if y < (screen_height/2 - gap_size/2) or y > (screen_height/2 + gap_size/2):
+			pygame.draw.line(screen, line_color_muted, (screen_width/2, y), (screen_width/2, y + segment_length), 2)
 
 async def main():
 	global player_speed, player_glow, opponent_glow, score_time, bg_rect
