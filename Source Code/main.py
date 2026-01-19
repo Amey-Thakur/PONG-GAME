@@ -2,9 +2,9 @@
 # icon: icon.png
 import pygame, sys, random, asyncio, math, webbrowser
 try:
-    import platform
+	import platform
 except ImportError:
-    platform = None
+	platform = None
 
 def ball_animation():
 	global ball_speed_x, ball_speed_y, player_score, opponent_score, score_time, player_kickback, opponent_kickback, player_glow, opponent_glow
@@ -274,7 +274,6 @@ async def main():
 		
 		# Render Paddles with Kickback Animation & Glow
 		if player_glow > 0:
-			# Subtle outer glow rect (larger and transparent) - simulated with multiple outlines
 			glow_rect = pygame.Rect(player.x + player_kickback - 5, player.y - 5, player.width + 10, player.height + 10)
 			pygame.draw.rect(screen, (50, 150, 80), glow_rect, border_radius=5)
 			player_glow -= 1
