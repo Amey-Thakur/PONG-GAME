@@ -136,7 +136,7 @@ async def loading_screen():
 		pygame.draw.rect(screen, white, (bar_x, bar_y, bar_width * progress, bar_height), border_radius=5)
 		
 		# Loading Text
-		load_text = author_font.render("INITIALIZING PREMIUM EXPERIENCE...", True, (150, 150, 150))
+		load_text = author_font.render("INITIALIZING ARCADE SYSTEMS...", True, (150, 150, 150))
 		load_rect = load_text.get_rect(center=(screen_width/2, bar_y + 40))
 		screen.blit(load_text, load_rect)
 
