@@ -1,0 +1,199 @@
+<html lang="en-us"><script src="https://pygame-web.github.io/archives/0.9/pythons.js" type=module id=site data-LINES=57 data-CONSOLE=25 data-python=python3.12 data-os=vtx,fs,snd,gui async defer>#<!--
+
+# screen pixels (real, hardware)
+WIDTH=1280
+HEIGHT=720
+
+# reference/idealized screen pixels
+REFX = 1980
+REFY = 1080
+
+def u(real, ref, v):
+    if abs(v)<0.9999999:
+        result = int( (float(real)/100.0) * (v*1000))
+        if v<0:
+            return real-result
+        return result
+    return int( (real/ref) * v )
+
+def ux(*argv):
+    global WIDTH, REFX
+    acc = 0
+    for v in argv:
+        acc += u(WIDTH, REFX, v)
+    return acc
+
+def uy(*argv):
+    global HEIGHT, REFY
+    acc = 0
+    for v in argv:
+        acc += u(HEIGHT, REFY, v)
+    return acc
+
+# do not rename
+async def custom_site():
+    import sys
+    import asyncio
+    import platform
+    import json
+    from pathlib import Path
+    import embed
+    import pygame
+
+    # THEME: Charcoal Background
+    platform.document.body.style.background = "#141414"
+
+    def compose():
+        pygame.display.update()
+        window.chromakey(None, *screen.get_colorkey(), 40)
+
+    pygame.init()
+    pygame.font.init()
+
+    screen = pygame.display.set_mode([ux(.100),uy(.100)], pygame.SRCALPHA, 32)
+    screen.set_colorkey( (0,0,0,0), pygame.RLEACCEL )
+    screen.fill( (0,0,0,0) )
+
+    compose()
+
+    platform.window.transfer.hidden = true
+    platform.window.canvas.style.visibility = "visible"
+
+    apk = "{{cookiecutter.archive}}.apk"
+    bundle = "{{cookiecutter.archive}}"
+
+    appdir = Path(f"/data/data/{bundle}")
+    appdir.mkdir()
+
+    # mount apk
+    cfg = {
+        "io": "url",
+        "type":"mount",
+        "mount" : {
+            "point" : appdir.as_posix(),
+            "path" : "/",
+        },
+        "path" : f"/ => {appdir.as_posix()}",
+    }
+
+    track = platform.window.MM.prepare(apk, json.dumps(cfg))
+
+    marginx = ux(.020)
+    marginy = uy(.450)
+
+    def pg_bar(pos):
+        nonlocal marginx, marginy
+        total = track.len or 10
+        slot = ux(.120)/ total
+
+        # Theme matching progress bar
+        pygame.draw.rect(screen,(30,30,30),( marginx-ux(10), marginy-uy(10), (total*slot)+ux(20), uy(110) ), border_radius=10)
+        pygame.draw.rect(screen,(0,255,127), ( marginx, marginy, track.pos*slot, uy(90)), border_radius=10 )
+
+    # wait until zip mount + overlayfs is complete
+    while not track.ready:
+        pg_bar(track.pos)
+        compose()
+        await asyncio.sleep(.1)
+
+    pg_bar(track.len)
+    compose()
+
+    # preloader will change dir and prepend it to sys.path
+    platform.run_main(PyConfig, loaderhome= appdir / "assets", loadermain=None)
+
+    while embed.counter()<0:
+        await asyncio.sleep(.1)
+
+    main = appdir / "assets" / "main.py"
+    await TopLevel_async_handler.start_toplevel(platform.shell, console=window.python.config.debug)
+    __import__(__name__).__file__ = str(main)
+
+    # Try to load icon for preloader
+    try:
+        icon = pygame.image.load("icon.png")
+        icon = pygame.transform.scale(icon, (256, 256))
+    except:
+        icon = None
+
+    # test/wait if user media interaction required
+    if not platform.window.MM.UME:
+        fnt = pygame.sysfont.SysFont("freesans",  uy(80) )
+        # THEME: Spring Green text
+        prompt = fnt.render("CLICK TO LAUNCH PONG", True, (0, 255, 127))
+        
+        while not platform.window.MM.UME:
+            screen.fill((0,0,0,0))
+            pg_bar(track.len)
+            if icon:
+                screen.blit(icon, (WIDTH/2 - 128, marginy - uy(350)))
+            screen.blit(prompt, ( marginx+ ux(80), marginy - uy(10) ) )
+            compose()
+            await asyncio.sleep(.1)
+
+    # cleanup
+    screen.fill( (0,0,0,0) )
+    pygame.display.flip()
+
+    await shell.runpy(main)
+
+import asyncio
+asyncio.run( custom_site() )
+
+# BEGIN BLOCK
+# =============================================================================
+# --></script><head>
+<script type="application/javascript">
+config = {
+    xtermjs : "1" ,
+    _sdl2 : "canvas",
+    user_canvas : 0,
+    user_canvas_managed : 0,
+    ume_block : 1,
+    can_close : 0,
+    archive : "{{cookiecutter.archive}}",
+    gui_debug : 3,
+    cdn : "https://pygame-web.github.io/archives/0.9/",
+    autorun : 0,
+    PYBUILD : "3.12"
+}
+</script>
+
+    <title>AMEY & MEGA</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="favicon.png" sizes="16x16">
+
+    <style>
+        body {
+            font-family: arial;
+            margin: 0;
+            padding: none;
+            background-color: #141414;
+        }
+        canvas.emscripten {
+            border: 0px none;
+            background-color: transparent;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            padding: 0;
+            margin: 0 auto;
+            position: absolute;
+            top: 0; bottom: 0; left: 0; right: 0;
+        }
+    </style>
+    <script src="https://pygame-web.github.io/archives/0.9//browserfs.min.js"></script>
+</head>
+<body>
+    <div id="transfer" align=center hidden>
+        <div class="emscripten" id="status">Downloading...</div>
+        <div class="emscripten">
+            <progress value="0" max="100" id="progress"></progress>
+        </div>
+    </div>
+    <canvas class="emscripten" id="canvas" width="1px" height="1px" oncontextmenu="event.preventDefault()" tabindex=1></canvas>
+    <div id=html></div>
+</body>
+</html>
