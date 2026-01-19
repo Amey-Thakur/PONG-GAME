@@ -12,6 +12,7 @@
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #050505; z-index: 99999999;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.5s ease-out;
         }
 
         .logo-pulse {
@@ -45,6 +46,38 @@
 
     <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
 
+    <!-- JS WATCHDOG & FAKE LOADER -->
+    <script>
+        // 1. Fake Loader: Moves bar to 90% over 5 seconds
+        let progress = 0;
+        const bar = document.getElementById('progress-fill');
+        const interval = setInterval(() => {
+            if (progress < 90) {
+                progress += Math.random() * 5;
+                bar.style.width = Math.min(progress, 90) + '%';
+            }
+        }, 200);
+
+        // 2. Watchdog: Force Remove Overlay after 8 seconds max
+        setTimeout(() => {
+            const overlay = document.getElementById('boot-overlay');
+            if (overlay) overlay.style.display = 'none';
+        }, 8000);
+
+        // Helper for Python to finish
+        window.finishLoad = function() {
+            clearInterval(interval);
+            bar.style.width = '100%';
+            setTimeout(() => {
+                const overlay = document.getElementById('boot-overlay');
+                if (overlay) {
+                    overlay.style.opacity = '0';
+                    setTimeout(() => overlay.style.display = 'none', 500);
+                }
+            }, 200);
+        };
+    </script>
+
     <script src="https://pygame-web.github.io/archives/0.9/pythons.js" 
             type=module id=site data-python="python3.11" data-os="vtx,fs,snd,gui" data-CONSOLE="0" async defer>
 #<!--
@@ -60,17 +93,6 @@ if not hasattr(platform, 'window'):
         def __getattr__(self, name): return None
     platform.window = MockWindow()
 
-def update_bar(percent):
-    try:
-        platform.window.document.getElementById("progress-fill").style.width = f"{percent}%"
-    except: pass
-
-def show_error(msg):
-    try:
-        platform.window.document.getElementById("status-text").innerText = f"ERROR: {msg}"
-        platform.window.document.getElementById("status-text").style.color = "#ff4500"
-    except: pass
-
 async def custom_site():
     try:
         # 1. Mount APK
@@ -82,34 +104,17 @@ async def custom_site():
         cfg = {"io": "url", "type": "mount", "mount": {"point": appdir.as_posix(), "path": "/"}, "path": f"/ => {appdir.as_posix()}"}
         
         if hasattr(platform.window, 'MM'):
-            track = platform.window.MM.prepare(apk, json.dumps(cfg))
-            
-            # Robust Loop with Timeout (Max 10 seconds wait)
-            for i in range(100):
-                if track.ready:
-                    break
-                
-                # Calculate progress
-                p = 0
-                if track.len > 0:
-                    p = int(track.pos / track.len * 100)
-                
-                # Visual Fallback: if real progress is stuck, simulate movement up to 80%
-                visual_p = max(p, min(i, 80))
-                update_bar(visual_p)
-                
-                await asyncio.sleep(0.1)
-
-        update_bar(100)
-        await asyncio.sleep(0.2) 
+            platform.window.MM.prepare(apk, json.dumps(cfg))
+            # Just wait a bit for mount, don't block forever
+            await asyncio.sleep(1.0)
 
         # 2. Setup Path
         if appdir.as_posix() not in sys.path:
             sys.path.append(appdir.as_posix())
 
-        # 3. Remove Overlay
+        # 3. Call JS to finish visual load
         try:
-             platform.window.document.getElementById("boot-overlay").style.display = "none"
+             platform.window.finishLoad()
         except: pass
 
         # 4. Start Game
@@ -117,9 +122,11 @@ async def custom_site():
         await main.main()
 
     except Exception as e:
-        show_error(str(e))
-        import traceback
-        traceback.print_exc()
+        print(f"CRITICAL: {e}")
+        # Even if error, remove overlay so we can see
+        try:
+             platform.window.document.getElementById("boot-overlay").style.display = "none"
+        except: pass
 
 # -->
     </script>
