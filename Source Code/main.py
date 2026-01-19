@@ -154,17 +154,18 @@ def draw_background():
 	pygame.draw.rect(screen, (220, 220, 220), (2, 2, screen_width - 4, screen_height - 4), 4)
 
 def draw_center_line():
-	# Gapped Minimalist Line for maximum clarity
-	# We leave a gap in the center where the ball spawns and countdown shows
-	gap_size = 200 # Total vertical gap
+	# Authentic Clipped Dashed Line
+	# Inner bounds are 6 to screen_height - 6
+	inner_top = 6
+	inner_bottom = screen_height - 6
 	segment_length = 15
-	gap_length = 10
-	line_color_muted = (80, 80, 80)
+	gap_length = 15
+	line_color_ground = (100, 100, 100) # Balanced gray
 	
-	for y in range(0, screen_height, segment_length + gap_length):
-		# Only draw if outside the central gap
-		if y < (screen_height/2 - gap_size/2) or y > (screen_height/2 + gap_size/2):
-			pygame.draw.line(screen, line_color_muted, (screen_width/2, y), (screen_width/2, y + segment_length), 2)
+	for y in range(inner_top, inner_bottom, segment_length + gap_length):
+		# Calculate end of segment and clip to inner_bottom
+		end_y = min(y + segment_length, inner_bottom)
+		pygame.draw.line(screen, line_color_muted, (screen_width/2, y), (screen_width/2, end_y), 2)
 
 async def main():
 	global player_speed, player_glow, opponent_glow, score_time, bg_rect
