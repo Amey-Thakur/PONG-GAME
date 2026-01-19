@@ -52,13 +52,14 @@ async def custom_site():
     pygame.init()
     pygame.font.init()
 
+    # Create the loading surface
     screen = pygame.display.set_mode([ux(.100),uy(.100)], pygame.SRCALPHA, 32)
     screen.set_colorkey( (0,0,0,0), pygame.RLEACCEL )
     screen.fill( (0,0,0,0) )
 
     compose()
 
-    platform.window.transfer.hidden = true
+    platform.window.transfer.hidden = True # Fixed syntax: true -> True
     platform.window.canvas.style.visibility = "visible"
 
     apk = "{{cookiecutter.archive}}.apk"
@@ -68,9 +69,9 @@ async def custom_site():
     appdir.mkdir()
 
     # Pre-initialize Stars for the loader
-    stars = []
+    ldr_stars = []
     for _ in range(50):
-        stars.append([random.randint(0, WIDTH), random.randint(0, HEIGHT), random.uniform(0.2, 1.5)])
+        ldr_stars.append([random.randint(0, WIDTH), random.randint(0, HEIGHT), random.uniform(0.2, 1.5)])
 
     try:
         icon_orig = pygame.image.load("icon.png").convert_alpha()
@@ -81,11 +82,11 @@ async def custom_site():
         screen.fill((20,20,20)) # Match main.py bg_color
         
         # Draw Starfield for premium feel during load
-        for star in stars:
+        for star in ldr_stars:
             star[1] += star[2]
             if star[1] > HEIGHT:
                 star[1] = 0
-                star[2] = random.uniform(0.2, 1.5)
+                star[0] = random.randint(0, WIDTH)
             color_val = int(star[2] * 80) + 40
             pygame.draw.circle(screen, (color_val, color_val, color_val), (int(star[0]), int(star[1])), max(1, int(star[2] * 1.2)))
         
@@ -102,7 +103,9 @@ async def custom_site():
         # Pulse Icon
         if icon_orig:
             pulse = 1.0 + 0.05 * math.sin(pygame.time.get_ticks() * 0.005)
-            icon = pygame.transform.scale(icon_orig, (int(300 * pulse), int(300 * pulse)))
+            # Use scale for better web stability
+            sz = (int(300 * pulse), int(300 * pulse))
+            icon = pygame.transform.scale(icon_orig, sz)
             screen.blit(icon, icon.get_rect(centerx=WIDTH/2, bottom=HEIGHT/2 + 80))
 
         # Progress bar
@@ -136,8 +139,13 @@ async def custom_site():
         compose()
         await asyncio.sleep(.01)
 
-    # FINAL STEP: Add paths and execute
-    sys.path.append(appdir.as_posix())
+    pg_bar(track.len, track.len)
+    compose()
+
+    # FINAL STEP: Add path and execute main.main()
+    if appdir.as_posix() not in sys.path:
+        sys.path.append(appdir.as_posix())
+    
     import main
     await main.main()
 
