@@ -165,7 +165,7 @@ def draw_center_line():
 	for y in range(inner_top, inner_bottom, segment_length + gap_length):
 		# Calculate end of segment and clip to inner_bottom
 		end_y = min(y + segment_length, inner_bottom)
-		pygame.draw.line(screen, line_color_muted, (screen_width/2, y), (screen_width/2, end_y), 2)
+		pygame.draw.line(screen, line_color_ground, (screen_width/2, y), (screen_width/2, end_y), 2)
 
 async def main():
 	global player_speed, player_glow, opponent_glow, score_time, bg_rect
