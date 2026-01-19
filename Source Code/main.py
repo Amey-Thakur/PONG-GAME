@@ -116,8 +116,8 @@ def draw_background():
 		# Draw star
 		pygame.draw.circle(screen, color, (int(star[0]), int(star[1])), max(1, int(star[2] * 1.2)))
 	
-	# Draw Arena Border
-	pygame.draw.rect(screen, (60, 60, 60), (0, 0, screen_width, screen_height), 4)
+	# Draw Arena Border (Brighter for visibility)
+	pygame.draw.rect(screen, (100, 100, 100), (0, 0, screen_width, screen_height), 4)
 
 async def loading_screen():
 	try:
@@ -283,13 +283,13 @@ async def main():
 		if score_time:
 			ball_start()
 
-		# HUD - Scores (Perfectly Centered in each half)
+		# HUD - Scores (Original Vertical Center Position)
 		player_text = game_font.render(f"{player_score}", True, white)
-		player_rect = player_text.get_rect(center=(screen_width * 3/4, 50))
+		player_rect = player_text.get_rect(center=(screen_width * 3/4, screen_height/2 - 10))
 		screen.blit(player_text, player_rect)
 		
 		opponent_text = game_font.render(f"{opponent_score}", True, white)
-		opponent_rect = opponent_text.get_rect(center=(screen_width * 1/4, 50))
+		opponent_rect = opponent_text.get_rect(center=(screen_width * 1/4, screen_height/2 - 10))
 		screen.blit(opponent_text, opponent_rect)
 
 		# Footer - Authorship (Capsule Design)
