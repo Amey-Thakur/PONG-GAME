@@ -133,7 +133,13 @@ async def loading_screen():
 				pygame.quit()
 				sys.exit()
 
-		screen.fill(bg_color)
+		# Progress bar
+		bar_width = 460
+		bar_height = 6
+		bar_x = screen_width/2 - bar_width/2
+		bar_y = screen_height/2 + 100
+		
+		progress = min(elapsed / 3000, 1.0)
 		
 		# Draw Background Grid even in loading for consistency
 		draw_background()
@@ -141,17 +147,12 @@ async def loading_screen():
 		if icon_orig:
 			# Pulse effect
 			pulse = 1.0 + 0.05 * math.sin(current_time * 0.005)
-			icon = pygame.transform.smoothscale(icon_orig, (int(300 * pulse), int(300 * pulse)))
-			icon_rect = icon.get_rect(center=(screen_width/2, screen_height/2 - 50))
+			# Using scale instead of smoothscale for better compatibility
+			icon_size = (int(300 * pulse), int(300 * pulse))
+			icon = pygame.transform.scale(icon_orig, icon_size)
+			# Center icon above the bar
+			icon_rect = icon.get_rect(centerx=screen_width/2, bottom=bar_y - 20)
 			screen.blit(icon, icon_rect)
-		
-		# Progress bar
-		bar_width = 460
-		bar_height = 6
-		bar_x = screen_width/2 - bar_width/2
-		bar_y = screen_height/2 + 180
-		
-		progress = min(elapsed / 3000, 1.0)
 		
 		# Draw background bar (glass look)
 		pygame.draw.rect(screen, (40, 40, 40), (bar_x-2, bar_y-2, bar_width+4, bar_height+4), border_radius=10)
