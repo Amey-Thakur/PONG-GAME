@@ -196,7 +196,7 @@ player_kickback = 0
 opponent_kickback = 0
 player_glow = 0
 opponent_glow = 0
-score_time = pygame.time.get_ticks()
+score_time = None
 
 # Font Assets
 try:
@@ -215,9 +215,10 @@ except:
 	score_sound = None
 
 async def main():
-	global player_speed
+	global player_speed, player_glow, opponent_glow, score_time
 	
 	await loading_screen()
+	score_time = pygame.time.get_ticks()
 	
 	while True:
 		for event in pygame.event.get():
