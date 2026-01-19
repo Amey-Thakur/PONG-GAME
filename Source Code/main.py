@@ -154,6 +154,7 @@ goal_flash         = 0                 # Frames remaining for goal flash effect
 player_flash       = 0                 # Frames remaining for player paddle flash
 opponent_flash     = 0                 # Frames remaining for opponent paddle flash
 last_countdown     = 0                 # Track countdown number for beep sound
+ai_mistake_timer   = 0                 # Frames remaining for AI to commit to mistake
 
 
 # ============================================================================
@@ -301,31 +302,37 @@ def update_opponent():
     
     AI Behavior:
     - Matches player speed for fair play
-    - Starts dumb (high mistake chance) and gets smarter over time
-    - Only reacts when ball is on its side of the court
+    - Starts dumb and gets smarter over time
+    - Mistakes persist for multiple frames to avoid jitter
     """
+    global ai_mistake_timer
+    
     # Only react when ball is approaching (crosses center line)
     if ball.centerx > AI_REACTION_ZONE:
         return  # Ball is on player's side, AI rests
     
-    # Calculate adaptive mistake chance based on total points scored
-    total_points = player_score + opponent_score
-    skill_level = min(total_points / AI_SKILL_UP_POINTS, 1.0)  # 0 to 1
-    current_mistake_chance = AI_MISTAKE_START - (AI_MISTAKE_START - AI_MISTAKE_MIN) * skill_level
-    
-    # Random mistake: occasionally move wrong direction
-    if random.random() < current_mistake_chance:
-        # Make a mistake - move away from ball briefly
+    # If in mistake mode, continue the mistake
+    if ai_mistake_timer > 0:
+        ai_mistake_timer -= 1
+        # Move away from ball (wrong direction)
         if opponent.centery < ball.centery:
-            opponent.y -= AI_SPEED
+            opponent.y -= AI_SPEED * 0.5  # Slower mistake movement
         else:
-            opponent.y += AI_SPEED
+            opponent.y += AI_SPEED * 0.5
     else:
-        # Normal tracking behavior
-        if opponent.centery < ball.centery:
-            opponent.y += AI_SPEED
-        elif opponent.centery > ball.centery:
-            opponent.y -= AI_SPEED
+        # Check if we should start a new mistake
+        total_points = player_score + opponent_score
+        skill_level = min(total_points / AI_SKILL_UP_POINTS, 1.0)
+        current_mistake_chance = AI_MISTAKE_START - (AI_MISTAKE_START - AI_MISTAKE_MIN) * skill_level
+        
+        if random.random() < current_mistake_chance * 0.1:  # Less frequent, longer duration
+            ai_mistake_timer = random.randint(15, 30)  # Commit to mistake for 15-30 frames
+        else:
+            # Normal tracking behavior (smooth)
+            if opponent.centery < ball.centery - 5:  # Dead zone to prevent jitter
+                opponent.y += AI_SPEED
+            elif opponent.centery > ball.centery + 5:
+                opponent.y -= AI_SPEED
     
     opponent.clamp_ip(pygame.Rect(0, TOP_BORDER, SCREEN_WIDTH, BOTTOM_BORDER - TOP_BORDER))
 
