@@ -1,111 +1,80 @@
-<html lang="en-us"><script src="https://pygame-web.github.io/archives/0.9/pythons.js" type=module id=site data-LINES=57 data-CONSOLE=25 data-python=python3.12 data-os=vtx,fs,snd,gui async defer>#<!--
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>AMEY & MEGA</title>
+    <style>
+        body { margin: 0; padding: 0; background-color: #050505; color: #eee; overflow: hidden; font-family: sans-serif; user-select: none; -webkit-user-select: none; }
+        #canvas { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); outline: none; }
+        #loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; pointer-events: none; }
+        .spinner {
+            width: 50px; height: 50px; border: 5px solid #333; border-top: 5px solid #fff;
+            border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div id="loading">
+        <div class="spinner"></div>
+        <div>LOADING PONG GAME...</div>
+    </div>
+    <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
 
-# screen pixels (real, hardware)
-WIDTH=1280
-HEIGHT=720
+    <script src="https://pygame-web.github.io/archives/0.9/pythons.js" 
+            type=module id=site data-python="python3.11" data-os="vtx,fs,snd,gui" async defer>
+#<!--
+import sys
+import asyncio
+import platform
+import json
+from pathlib import Path
 
-# reference/idealized screen pixels
-REFX = 1980
-REFY = 1080
+# Fix for platform.window in some environments
+if not hasattr(platform, 'window'):
+    class MockWindow:
+        def __getattr__(self, name): return None
+    platform.window = MockWindow()
 
-def u(real, ref, v):
-    if abs(v)<0.9999999:
-        result = int( (float(real)/100.0) * (v*1000))
-        if v<0:
-            return real-result
-        return result
-    return int( (real/ref) * v )
-
-def ux(*argv):
-    global WIDTH, REFX
-    acc = 0
-    for v in argv:
-        acc += u(WIDTH, REFX, v)
-    return acc
-
-def uy(*argv):
-    global HEIGHT, REFY
-    acc = 0
-    for v in argv:
-        acc += u(HEIGHT, REFY, v)
-    return acc
-
-# do not rename
 async def custom_site():
-    import sys
-    import asyncio
-    import platform
-    import json
-    from pathlib import Path
-    import embed
-    import pygame
+    try:
+        # 1. Mount APK
+        apk = "{{cookiecutter.archive}}.apk"
+        bundle = "{{cookiecutter.archive}}"
+        appdir = Path(f"/data/data/{bundle}")
+        appdir.mkdir(parents=True, exist_ok=True)
 
-    # THEME: Cinema Mode Background
-    platform.document.body.style.background = "#050505"
+        # Mount configuration
+        cfg = {"io": "url", "type": "mount", "mount": {"point": appdir.as_posix(), "path": "/"}, "path": f"/ => {appdir.as_posix()}"}
+        
+        # Check if MM (Mount Manager) is available, otherwise basic sleep (shouldn't happen in browser)
+        if hasattr(platform.window, 'MM'):
+            track = platform.window.MM.prepare(apk, json.dumps(cfg))
+            while not track.ready:
+                await asyncio.sleep(0.1)
+        else:
+            print("Warning: MM not found, skipping mount wait.")
 
-    def compose():
-        pygame.display.update()
-        window.chromakey(None, *screen.get_colorkey(), 40)
+        # 2. Add to sys.path
+        if appdir.as_posix() not in sys.path:
+            sys.path.append(appdir.as_posix())
 
-    pygame.init()
-    pygame.font.init()
+        # 3. Clean up UI
+        try:
+             platform.window.document.getElementById("loading").style.display = "none"
+        except: 
+             pass
 
-    screen = pygame.display.set_mode([ux(.100),uy(.100)], pygame.SRCALPHA, 32)
-    screen.set_colorkey( (0,0,0,0), pygame.RLEACCEL )
-    screen.fill( (0,0,0,0) )
+        # 4. Run Main
+        import main
+        await main.main()
 
-    compose()
-
-    platform.window.transfer.hidden = true
-    platform.window.canvas.style.visibility = "visible"
-
-    # Use dynamic archive detection
-    apk = "{{cookiecutter.archive}}.apk"
-    bundle = "{{cookiecutter.archive}}"
-
-    appdir = Path(f"/data/data/{bundle}")
-    appdir.mkdir()
-
-    # mount apk
-    cfg = {
-        "io": "url",
-        "type":"mount",
-        "mount" : {
-            "point" : appdir.as_posix(),
-            "path" : "/",
-        },
-        "path" : f"/ => {appdir.as_posix()}",
-    }
-
-    track = platform.window.MM.prepare(apk, json.dumps(cfg))
-
-    marginx = ux(.020)
-    marginy = uy(.450)
-
-    def pg_bar(pos):
-        nonlocal marginx, marginy
-        total = track.len or 10
-        slot = ux(.120)/ total
-
-        # Theme matching progress bar
-        pygame.draw.rect(screen,(30,30,30),( marginx-ux(10), marginy-uy(10), (total*slot)+ux(20), uy(110) ), border_radius=10)
-        pygame.draw.rect(screen,(0,255,127), ( marginx, marginy, track.pos*slot, uy(90)), border_radius=10 )
-
-    # wait until zip mount + overlayfs is complete
-    while not track.ready:
-        pg_bar(track.pos)
-        compose()
-        await asyncio.sleep(.1)
-
-    pg_bar(track.len)
-    compose()
-
-    # switch to app
-    if appdir.as_posix() not in sys.path:
-        sys.path.append(appdir.as_posix())
-
-    import main
-    await main.main()
+    except Exception as e:
+        print(f"CRITICAL ERROR: {e}")
+        import traceback
+        traceback.print_exc()
 
 # -->
-</script></html>
+    </script>
+</body>
+</html>
