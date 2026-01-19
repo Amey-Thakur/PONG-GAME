@@ -2,6 +2,7 @@
 # PONG GAME
 # ============================================================================
 # A classic Pong game reimagined with premium arcade aesthetics.
+# Features progressive difficulty, smarter AI, and visual effects.
 #
 # Authors:          Amey Thakur & Mega Satish
 # Date:             July 5, 2021
@@ -44,18 +45,25 @@ RIGHT_BORDER  = 1274
 # Color Palette
 COLOR_BACKGROUND  = (20, 20, 20)
 COLOR_BALL        = (240, 240, 240)
-COLOR_PLAYER      = (0, 255, 127)
-COLOR_OPPONENT    = (255, 69, 0)
+COLOR_PLAYER      = (0, 255, 127)      # Spring Green
+COLOR_OPPONENT    = (255, 69, 0)       # Orange Red
 COLOR_WHITE       = (255, 255, 255)
 COLOR_BORDER      = (220, 220, 220)
 COLOR_LINE        = (80, 80, 80)
 
-# Game Physics
-BALL_SPEED    = 7
-PADDLE_SPEED  = 7
-PADDLE_HEIGHT = 140
-PADDLE_WIDTH  = 10
-BALL_SIZE     = 30
+# Game Physics - Progressive Difficulty
+BALL_SPEED_START  = 4                  # Start slow for easy gameplay
+BALL_SPEED_MAX    = 14                 # Maximum ball speed cap
+BALL_SPEED_INC    = 0.3                # Speed increase per paddle hit
+PLAYER_SPEED      = 7                  # Player paddle speed
+AI_SPEED          = 5                  # AI is slower than player (beatable!)
+PADDLE_HEIGHT     = 140
+PADDLE_WIDTH      = 10
+BALL_SIZE         = 30
+
+# AI Behavior Settings
+AI_REACTION_ZONE  = SCREEN_WIDTH / 2   # AI only reacts when ball crosses center
+AI_MISTAKE_CHANCE = 0.03               # 3% chance of random mistake per frame
 
 
 # ============================================================================
@@ -69,9 +77,9 @@ clock = pygame.time.Clock()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('AMEY & MEGA')
 
-# Fonts - Using clean sans-serif for Google Play aesthetic
-game_font   = pygame.font.SysFont("segoeui", 32, bold=True)
-author_font = pygame.font.SysFont("segoeui", 18, bold=True)
+# Fonts
+game_font    = pygame.font.SysFont("segoeui", 32, bold=True)
+author_font  = pygame.font.SysFont("segoeui", 18, bold=True)
 loading_font = pygame.font.SysFont("segoeui", 14, bold=True)
 
 # Sound Effects
@@ -120,12 +128,20 @@ opponent = pygame.Rect(
 # GAME STATE
 # ============================================================================
 
-ball_velocity     = [BALL_SPEED * random.choice((1, -1)), BALL_SPEED * random.choice((1, -1))]
-player_velocity   = 0
-player_score      = 0
-opponent_score    = 0
-score_time        = None
-footer_rect       = pygame.Rect(0, 0, 0, 0)
+current_ball_speed = BALL_SPEED_START  # Tracks progressive speed
+ball_velocity      = [0, 0]
+player_velocity    = 0
+player_score       = 0
+opponent_score     = 0
+score_time         = None
+footer_rect        = pygame.Rect(0, 0, 0, 0)
+rally_count        = 0                 # Count paddle hits in current rally
+
+# Visual Effects State
+ball_trail         = []                # Stores last N ball positions for trail
+screen_shake       = 0                 # Frames remaining for screen shake
+player_flash       = 0                 # Frames remaining for player paddle flash
+opponent_flash     = 0                 # Frames remaining for opponent paddle flash
 
 
 # ============================================================================
@@ -135,7 +151,7 @@ footer_rect       = pygame.Rect(0, 0, 0, 0)
 async def show_loading_screen():
     """Display premium Apple-style loading screen."""
     start_time = pygame.time.get_ticks()
-    duration = 2500  # 2.5 seconds
+    duration = 2500
     
     while True:
         current_time = pygame.time.get_ticks()
@@ -150,11 +166,9 @@ async def show_loading_screen():
                 sys.exit()
         
         progress = min(elapsed / duration, 1.0)
-        
-        # Background
         screen.fill((5, 5, 5))
         
-        # Icon with pulse effect
+        # Pulsing icon
         if icon_image:
             pulse = 1.0 + 0.03 * math.sin(current_time * 0.006)
             size = int(120 * pulse)
@@ -163,23 +177,17 @@ async def show_loading_screen():
             screen.blit(icon, icon_rect)
         
         # Progress bar
-        bar_width = 300
-        bar_height = 4
+        bar_width, bar_height = 300, 4
         bar_x = (SCREEN_WIDTH - bar_width) / 2
         bar_y = SCREEN_HEIGHT / 2 + 40
-        
-        # Background bar
         pygame.draw.rect(screen, (34, 34, 34), (bar_x, bar_y, bar_width, bar_height), border_radius=2)
-        
-        # Fill bar
         fill_width = int(bar_width * progress)
         if fill_width > 0:
             pygame.draw.rect(screen, COLOR_WHITE, (bar_x, bar_y, fill_width, bar_height), border_radius=2)
         
         # Loading text
         text = loading_font.render("INITIALIZING PONG GAME...", True, (170, 170, 170))
-        text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, bar_y + 35))
-        screen.blit(text, text_rect)
+        screen.blit(text, text.get_rect(center=(SCREEN_WIDTH / 2, bar_y + 35)))
         
         pygame.display.flip()
         await asyncio.sleep(0)
@@ -191,12 +199,23 @@ async def show_loading_screen():
 # ============================================================================
 
 def update_ball():
-    """Update ball position and handle collisions."""
+    """
+    Update ball position and handle collisions.
+    Implements progressive difficulty - ball speeds up with each paddle hit.
+    """
     global ball_velocity, player_score, opponent_score, score_time
+    global current_ball_speed, rally_count, screen_shake
+    global player_flash, opponent_flash
 
     ball.x += ball_velocity[0]
     ball.y += ball_velocity[1]
 
+    # Store position for trail effect (last 8 positions)
+    ball_trail.append((ball.centerx, ball.centery))
+    if len(ball_trail) > 8:
+        ball_trail.pop(0)
+
+    # Wall collisions (top/bottom)
     if ball.top <= TOP_BORDER:
         ball.top = TOP_BORDER
         ball_velocity[1] *= -1
@@ -209,25 +228,51 @@ def update_ball():
         if pong_sound:
             pong_sound.play()
 
+    # Scoring (left/right edges)
     if ball.left <= 0:
         player_score += 1
         score_time = pygame.time.get_ticks()
+        screen_shake = 10  # Trigger screen shake
+        rally_count = 0
+        current_ball_speed = BALL_SPEED_START  # Reset speed on score
         if score_sound:
             score_sound.play()
 
     if ball.right >= SCREEN_WIDTH:
         opponent_score += 1
         score_time = pygame.time.get_ticks()
+        screen_shake = 10
+        rally_count = 0
+        current_ball_speed = BALL_SPEED_START
         if score_sound:
             score_sound.play()
 
+    # Paddle collisions with speed increase
     if ball.colliderect(player) and ball_velocity[0] > 0:
-        ball_velocity[0] *= -1
+        # Increase ball speed (progressive difficulty)
+        rally_count += 1
+        current_ball_speed = min(current_ball_speed + BALL_SPEED_INC, BALL_SPEED_MAX)
+        
+        # Update velocity with new speed, preserve direction
+        direction_x = -1  # Reverse horizontal
+        direction_y = 1 if ball_velocity[1] > 0 else -1
+        ball_velocity[0] = current_ball_speed * direction_x
+        ball_velocity[1] = current_ball_speed * direction_y
+        
+        player_flash = 8  # Visual feedback
         if pong_sound:
             pong_sound.play()
 
     if ball.colliderect(opponent) and ball_velocity[0] < 0:
-        ball_velocity[0] *= -1
+        rally_count += 1
+        current_ball_speed = min(current_ball_speed + BALL_SPEED_INC, BALL_SPEED_MAX)
+        
+        direction_x = 1
+        direction_y = 1 if ball_velocity[1] > 0 else -1
+        ball_velocity[0] = current_ball_speed * direction_x
+        ball_velocity[1] = current_ball_speed * direction_y
+        
+        opponent_flash = 8
         if pong_sound:
             pong_sound.play()
 
@@ -239,22 +284,43 @@ def update_player():
 
 
 def update_opponent():
-    """Update opponent (AI) paddle position."""
-    if opponent.centery < ball.centery:
-        opponent.y += PADDLE_SPEED
-    elif opponent.centery > ball.centery:
-        opponent.y -= PADDLE_SPEED
-
+    """
+    Update opponent (AI) paddle position.
+    
+    AI Behavior:
+    - Only reacts when ball is on its side of the court (reaction zone)
+    - Moves slower than player (beatable)
+    - Occasionally makes random mistakes
+    """
+    # Only react when ball is approaching (crosses center line)
+    if ball.centerx > AI_REACTION_ZONE:
+        return  # Ball is on player's side, AI rests
+    
+    # Random mistake: occasionally move wrong direction
+    if random.random() < AI_MISTAKE_CHANCE:
+        # Make a mistake - move away from ball briefly
+        if opponent.centery < ball.centery:
+            opponent.y -= AI_SPEED
+        else:
+            opponent.y += AI_SPEED
+    else:
+        # Normal tracking behavior
+        if opponent.centery < ball.centery:
+            opponent.y += AI_SPEED
+        elif opponent.centery > ball.centery:
+            opponent.y -= AI_SPEED
+    
     opponent.clamp_ip(pygame.Rect(0, TOP_BORDER, SCREEN_WIDTH, BOTTOM_BORDER - TOP_BORDER))
 
 
 def reset_ball():
     """Handle countdown and ball reset after scoring."""
-    global ball_velocity, score_time
+    global ball_velocity, score_time, current_ball_speed
 
     ball.center = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
     player.centery = SCREEN_HEIGHT / 2
     opponent.centery = SCREEN_HEIGHT / 2
+    ball_trail.clear()
 
     elapsed = pygame.time.get_ticks() - score_time
 
@@ -265,7 +331,12 @@ def reset_ball():
     elif elapsed < 2100:
         countdown_text = "1"
     else:
-        ball_velocity = [BALL_SPEED * random.choice((1, -1)), BALL_SPEED * random.choice((1, -1))]
+        # Start with slow speed
+        current_ball_speed = BALL_SPEED_START
+        ball_velocity = [
+            current_ball_speed * random.choice((1, -1)),
+            current_ball_speed * random.choice((1, -1))
+        ]
         score_time = None
         return
 
@@ -279,24 +350,63 @@ def reset_ball():
 # ============================================================================
 
 def draw_background():
-    """Render the game background."""
+    """Render the game background with optional screen shake."""
+    global screen_shake
+    
+    # Calculate shake offset
+    offset_x, offset_y = 0, 0
+    if screen_shake > 0:
+        offset_x = random.randint(-3, 3)
+        offset_y = random.randint(-3, 3)
+        screen_shake -= 1
+    
     screen.fill(COLOR_BACKGROUND)
-    pygame.draw.rect(screen, COLOR_BORDER, (2, 2, SCREEN_WIDTH - 4, SCREEN_HEIGHT - 4), 4)
+    pygame.draw.rect(screen, COLOR_BORDER, (2 + offset_x, 2 + offset_y, SCREEN_WIDTH - 4, SCREEN_HEIGHT - 4), 4)
 
 
 def draw_center_line():
     """Render the center dashed line."""
-    segment = 15
-    gap = 15
+    segment, gap = 15, 15
     for y in range(TOP_BORDER, BOTTOM_BORDER, segment + gap):
         end_y = min(y + segment, BOTTOM_BORDER)
         pygame.draw.line(screen, COLOR_LINE, (SCREEN_WIDTH / 2, y), (SCREEN_WIDTH / 2, end_y), 2)
 
 
+def draw_ball_trail():
+    """Render ball trail effect for visual feedback."""
+    for i, pos in enumerate(ball_trail):
+        # Fade alpha based on position in trail
+        alpha = int(255 * (i + 1) / len(ball_trail) * 0.3)
+        size = int(BALL_SIZE * (i + 1) / len(ball_trail) * 0.8)
+        if size > 2:
+            trail_surface = pygame.Surface((size, size), pygame.SRCALPHA)
+            pygame.draw.ellipse(trail_surface, (*COLOR_BALL[:3], alpha), (0, 0, size, size))
+            screen.blit(trail_surface, (pos[0] - size // 2, pos[1] - size // 2))
+
+
 def draw_paddles():
-    """Render player and opponent paddles."""
-    pygame.draw.rect(screen, COLOR_PLAYER, player, border_radius=2)
-    pygame.draw.rect(screen, COLOR_OPPONENT, opponent, border_radius=2)
+    """Render player and opponent paddles with flash effects."""
+    global player_flash, opponent_flash
+    
+    # Player paddle with flash
+    if player_flash > 0:
+        flash_color = (min(255, COLOR_PLAYER[0] + 100), 
+                       min(255, COLOR_PLAYER[1] + 100), 
+                       min(255, COLOR_PLAYER[2] + 100))
+        pygame.draw.rect(screen, flash_color, player, border_radius=2)
+        player_flash -= 1
+    else:
+        pygame.draw.rect(screen, COLOR_PLAYER, player, border_radius=2)
+    
+    # Opponent paddle with flash
+    if opponent_flash > 0:
+        flash_color = (min(255, COLOR_OPPONENT[0] + 100), 
+                       min(255, COLOR_OPPONENT[1] + 100), 
+                       min(255, COLOR_OPPONENT[2] + 100))
+        pygame.draw.rect(screen, flash_color, opponent, border_radius=2)
+        opponent_flash -= 1
+    else:
+        pygame.draw.rect(screen, COLOR_OPPONENT, opponent, border_radius=2)
 
 
 def draw_ball():
@@ -308,18 +418,22 @@ def draw_scores():
     """Render the score display."""
     player_text = game_font.render(str(player_score), True, COLOR_PLAYER)
     opponent_text = game_font.render(str(opponent_score), True, COLOR_OPPONENT)
-
     screen.blit(player_text, player_text.get_rect(center=(SCREEN_WIDTH / 2 + 65, SCREEN_HEIGHT / 2)))
     screen.blit(opponent_text, opponent_text.get_rect(center=(SCREEN_WIDTH / 2 - 65, SCREEN_HEIGHT / 2)))
+
+
+def draw_rally_counter():
+    """Display current rally count and ball speed."""
+    if rally_count > 0:
+        rally_text = loading_font.render(f"Rally: {rally_count}  Speed: {current_ball_speed:.1f}", True, (100, 100, 100))
+        screen.blit(rally_text, rally_text.get_rect(center=(SCREEN_WIDTH / 2, 30)))
 
 
 def draw_footer():
     """Render the authorship footer."""
     global footer_rect
-
     text = author_font.render("Designed & Developed by Amey & Mega", True, (180, 180, 180))
     text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 35))
-
     footer_rect = text_rect.inflate(40, 15)
     pygame.draw.rect(screen, (30, 30, 30), footer_rect, border_radius=15)
     pygame.draw.rect(screen, (60, 60, 60), footer_rect, width=1, border_radius=15)
@@ -332,12 +446,10 @@ def draw_footer():
 
 async def main():
     """Main game entry point."""
-    global player_velocity, score_time, footer_rect
+    global player_velocity, score_time, footer_rect, current_ball_speed
 
-    # Show loading screen first
     await show_loading_screen()
 
-    # Initialize positions
     player.centery = SCREEN_HEIGHT / 2
     opponent.centery = SCREEN_HEIGHT / 2
     score_time = pygame.time.get_ticks()
@@ -358,15 +470,15 @@ async def main():
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_DOWN:
-                    player_velocity += PADDLE_SPEED
+                    player_velocity += PLAYER_SPEED
                 if event.key == pygame.K_UP:
-                    player_velocity -= PADDLE_SPEED
+                    player_velocity -= PLAYER_SPEED
 
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_DOWN:
-                    player_velocity -= PADDLE_SPEED
+                    player_velocity -= PLAYER_SPEED
                 if event.key == pygame.K_UP:
-                    player_velocity += PADDLE_SPEED
+                    player_velocity += PLAYER_SPEED
 
         update_ball()
         update_player()
@@ -374,6 +486,7 @@ async def main():
 
         draw_background()
         draw_center_line()
+        draw_ball_trail()
         draw_paddles()
         draw_ball()
 
@@ -381,6 +494,7 @@ async def main():
             reset_ball()
 
         draw_scores()
+        draw_rally_counter()
         draw_footer()
 
         pygame.display.flip()
