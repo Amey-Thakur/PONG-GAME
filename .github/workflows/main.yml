@@ -33,6 +33,16 @@ jobs:
           mkdir -p dist
           cp -r "Source Code/build/web/." dist/
 
+      - name: Apply Theme Styling
+        run: |
+          # Inject custom CSS into the generated index.html
+          sed -i 's|</head>|<style>\
+            body { background: #0a0a0a !important; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: "Segoe UI", sans-serif; }\
+            button, input[type="button"] { background: linear-gradient(180deg, #1a1a1a, #0d0d0d) !important; color: #fff !important; border: 2px solid #333 !important; border-radius: 12px !important; padding: 18px 60px !important; font-size: 16px !important; font-weight: 600 !important; letter-spacing: 2px !important; text-transform: uppercase !important; cursor: pointer !important; box-shadow: 0 4px 20px rgba(0,0,0,0.5) !important; transition: all 0.3s !important; }\
+            button:hover, input[type="button"]:hover { border-color: #00ff7f !important; box-shadow: 0 4px 30px rgba(0,255,127,0.3) !important; }\
+            #status, #output, pre { display: none !important; }\
+          </style></head>|' dist/index.html
+
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
