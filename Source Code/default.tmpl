@@ -6,9 +6,6 @@ Authors:          Amey Thakur & Mega Satish
 Date:             July 5, 2021
 License:          MIT License
 Repository:       https://github.com/Amey-Thakur/PONG-GAME
-Profiles:
-  - Amey Thakur:  https://github.com/Amey-Thakur
-  - Mega Satish:  https://github.com/msatmod
 ============================================================================
 -->
 <!DOCTYPE html>
@@ -21,10 +18,9 @@ Profiles:
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: #050505; color: #eee; font-family: 'Outfit', sans-serif; overflow: hidden; user-select: none; visibility: hidden; }
+        body { background-color: #050505; color: #eee; font-family: 'Outfit', sans-serif; overflow: hidden; }
         
         #boot-overlay {
-            visibility: visible;
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: #050505; z-index: 99999;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -33,12 +29,11 @@ Profiles:
         
         .logo { width: 120px; height: 120px; margin-bottom: 30px; background: url('icon.png') no-repeat center; background-size: contain; }
         #progress-container { width: 300px; height: 4px; background: #222; border-radius: 2px; overflow: hidden; }
-        #progress-fill { width: 0%; height: 100%; background: #fff; animation: load 5s ease-out forwards; }
-        @keyframes load { 0% { width: 0%; } 100% { width: 90%; } }
+        #progress-fill { width: 0%; height: 100%; background: #fff; animation: load 6s ease-out forwards; }
+        @keyframes load { 0% { width: 0%; } 100% { width: 95%; } }
         .loading-text { font-size: 14px; color: #aaa; letter-spacing: 3px; text-transform: uppercase; margin-top: 20px; font-weight: bold; }
         
-        #canvas { visibility: visible; position: absolute; top: 0; left: 0; width: 100%; height: 100%; outline: none; z-index: 10; }
-        #status, #output, #console { display: none !important; }
+        #canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; outline: none; }
     </style>
 </head>
 <body>
@@ -50,7 +45,6 @@ Profiles:
     <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
 
     <script>
-        // Reveal game when ready
         window.finishLoad = function() {
             var bar = document.getElementById('progress-fill');
             var overlay = document.getElementById('boot-overlay');
@@ -61,20 +55,14 @@ Profiles:
                 setTimeout(function() { overlay.style.display = 'none'; }, 500);
             }, 200);
         };
-        
-        // FAILSAFE: Force remove after 8 seconds
-        setTimeout(function() {
-            var overlay = document.getElementById('boot-overlay');
-            if (overlay && overlay.style.display !== 'none') {
-                overlay.style.opacity = '0';
-                setTimeout(function() { overlay.style.display = 'none'; }, 500);
-            }
-        }, 8000);
     </script>
 
-    <script src="https://pygame-web.github.io/archives/0.9/pythons.js" type="module" id="site" data-python="python3.11" data-os="vtx,fs,snd,gui" data-CONSOLE="0" async defer>
+    <script src="https://pygame-web.github.io/archives/0.9/pythons.js" type="module" id="site" data-python="python3.11" data-os="vtx,fs,snd,gui" async defer>
 #<!--
-import sys, asyncio, platform, json
+import sys
+import asyncio
+import platform
+import json
 from pathlib import Path
 
 if not hasattr(platform, 'window'):
@@ -83,27 +71,29 @@ if not hasattr(platform, 'window'):
     platform.window = MockWindow()
 
 async def custom_site():
+    apk = "{{cookiecutter.archive}}.apk"
+    bundle = "{{cookiecutter.archive}}"
+    appdir = Path(f"/data/data/{bundle}")
+    appdir.mkdir(parents=True, exist_ok=True)
+    
+    cfg = {"io": "url", "type": "mount", "mount": {"point": appdir.as_posix(), "path": "/"}, "path": f"/ => {appdir.as_posix()}"}
+    
+    if hasattr(platform.window, 'MM'):
+        track = platform.window.MM.prepare(apk, json.dumps(cfg))
+        while not track.ready:
+            await asyncio.sleep(0.1)
+    
+    if appdir.as_posix() not in sys.path:
+        sys.path.append(appdir.as_posix())
+    
+    import main
+    
     try:
-        apk = "{{cookiecutter.archive}}.apk"
-        bundle = "{{cookiecutter.archive}}"
-        appdir = Path(f"/data/data/{bundle}")
-        appdir.mkdir(parents=True, exist_ok=True)
-        cfg = {"io": "url", "type": "mount", "mount": {"point": appdir.as_posix(), "path": "/"}, "path": f"/ => {appdir.as_posix()}"}
-        
-        if hasattr(platform.window, 'MM'):
-            platform.window.MM.prepare(apk, json.dumps(cfg))
-        
-        if appdir.as_posix() not in sys.path:
-            sys.path.append(appdir.as_posix())
-        
-        import main
-        try: platform.window.finishLoad()
-        except: pass
-        await main.main()
-    except Exception as e:
-        print(f"[ERROR] {e}")
-        try: platform.window.finishLoad()
-        except: pass
+        platform.window.finishLoad()
+    except:
+        pass
+    
+    await main.main()
 # -->
     </script>
 </body>
