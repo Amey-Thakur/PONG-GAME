@@ -86,13 +86,16 @@ def ball_start():
 
 	if current_time - score_time < 700:
 		number_three = game_font.render("3", True, white)
-		screen.blit(number_three, (screen_width/2 - 10, screen_height/2 + 20))
+		num_rect = number_three.get_rect(center=(screen_width/2, screen_height/2 + 50))
+		screen.blit(number_three, num_rect)
 	elif current_time - score_time < 1400:
 		number_two = game_font.render("2", True, white)
-		screen.blit(number_two, (screen_width/2 - 10, screen_height/2 + 20))
+		num_rect = number_two.get_rect(center=(screen_width/2, screen_height/2 + 50))
+		screen.blit(number_two, num_rect)
 	elif current_time - score_time < 2100:
 		number_one = game_font.render("1", True, white)
-		screen.blit(number_one, (screen_width/2 - 10, screen_height/2 + 20))
+		num_rect = number_one.get_rect(center=(screen_width/2, screen_height/2 + 50))
+		screen.blit(number_one, num_rect)
 
 	if current_time - score_time < 2100:
 		ball_speed_x, ball_speed_y = 0,0
@@ -294,13 +297,13 @@ async def main():
 		if score_time:
 			ball_start()
 
-		# HUD - Scores (Original Proximity Style)
+		# HUD - Scores (Linear to Ball)
 		player_text = game_font.render(f"{player_score}", True, white)
-		player_rect = player_text.get_rect(center=(screen_width/2 + 60, screen_height/2 - 10))
+		player_rect = player_text.get_rect(center=(screen_width/2 + 65, screen_height/2))
 		screen.blit(player_text, player_rect)
 		
 		opponent_text = game_font.render(f"{opponent_score}", True, white)
-		opponent_rect = opponent_text.get_rect(center=(screen_width/2 - 60, screen_height/2 - 10))
+		opponent_rect = opponent_text.get_rect(center=(screen_width/2 - 65, screen_height/2))
 		screen.blit(opponent_text, opponent_rect)
 
 		# Footer - Authorship (Capsule Design)
