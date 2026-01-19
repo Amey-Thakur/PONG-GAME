@@ -242,10 +242,13 @@ async def main():
 	score_time = pygame.time.get_ticks()
 	
 	while True:
-		for event in pygame.event.get():
-			if event.type == pygame.QUIT:
-				pygame.quit()
-				sys.exit()
+			if event.type == pygame.MOUSEBUTTONDOWN:
+				if bg_rect.collidepoint(event.pos):
+					github_url = "https://github.com/Amey-Thakur/PONG-GAME"
+					if platform and hasattr(platform, 'window'):
+						platform.window.open(github_url, "_blank")
+					else:
+						webbrowser.open(github_url)
 			if event.type == pygame.KEYDOWN:
 				if event.key == pygame.K_DOWN: player_speed += 7
 				if event.key == pygame.K_UP: player_speed -= 7
@@ -293,6 +296,7 @@ async def main():
 		screen.blit(opponent_text, opponent_rect)
 
 		# Footer - Authorship (Capsule Design)
+		global bg_rect
 		author_str = "Designed & Developed by Amey & Mega"
 		author_text = author_font.render(author_str, True, (180, 180, 180))
 		text_rect = author_text.get_rect(center=(screen_width/2, screen_height - 35))
