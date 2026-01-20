@@ -261,16 +261,16 @@ def update_ball():
         player_score += 1
         player_score_glow = 20
         border_flash_color = 'player'
-        border_flash_timer = 20
+        border_flash_timer = 90
         score_time = pygame.time.get_ticks()
-        goal_flash = 15
+        goal_flash = 50
         rally_count = 0
         current_ball_speed = BALL_SPEED_START
         for _ in range(12):
             goal_particles.append({
                 'x': SCREEN_WIDTH / 4, 'y': SCREEN_HEIGHT / 2,
                 'vx': random.uniform(-3, 3), 'vy': random.uniform(-4, 2),
-                'life': random.randint(20, 40), 'color': COLOR_PLAYER
+                'life': random.randint(60, 100), 'color': COLOR_PLAYER
             })
         if goal_sound:
             goal_sound.play()
@@ -279,16 +279,16 @@ def update_ball():
         opponent_score += 1
         opponent_score_glow = 20
         border_flash_color = 'opponent'
-        border_flash_timer = 20
+        border_flash_timer = 90
         score_time = pygame.time.get_ticks()
-        goal_flash = 15
+        goal_flash = 50
         rally_count = 0
         current_ball_speed = BALL_SPEED_START
         for _ in range(12):
             goal_particles.append({
                 'x': 3 * SCREEN_WIDTH / 4, 'y': SCREEN_HEIGHT / 2,
                 'vx': random.uniform(-3, 3), 'vy': random.uniform(-4, 2),
-                'life': random.randint(20, 40), 'color': COLOR_OPPONENT
+                'life': random.randint(60, 100), 'color': COLOR_OPPONENT
             })
         if goal_sound:
             goal_sound.play()
@@ -436,7 +436,7 @@ def draw_background():
     
     # Goal flash creates a brief bright pulse
     if goal_flash > 0:
-        flash_intensity = int(30 * (goal_flash / 15))
+        flash_intensity = int(30 * (goal_flash / 50))
         bg_color = (20 + flash_intensity, 20 + flash_intensity, 20 + flash_intensity)
         goal_flash -= 1
     else:
@@ -446,7 +446,7 @@ def draw_background():
     
     # Border flashes green (player win) or red (opponent win)
     if border_flash_timer > 0:
-        alpha = border_flash_timer / 20
+        alpha = border_flash_timer / 90
         if border_flash_color == 'player':
             border_color = (int(COLOR_PLAYER[0] * alpha + COLOR_BORDER[0] * (1 - alpha)),
                             int(COLOR_PLAYER[1] * alpha + COLOR_BORDER[1] * (1 - alpha)),
@@ -475,14 +475,14 @@ def draw_goal_particles():
     for particle in goal_particles[:]:
         particle['x'] += particle['vx']
         particle['y'] += particle['vy']
-        particle['vy'] += 0.15  # Gravity
+        particle['vy'] += 0.05  # Gravity
         particle['life'] -= 1
         
         if particle['life'] <= 0:
             goal_particles.remove(particle)
         else:
-            alpha = int(255 * (particle['life'] / 40))
-            size = max(2, int(6 * (particle['life'] / 40)))
+            alpha = int(255 * (particle['life'] / 100))
+            size = max(2, int(6 * (particle['life'] / 100)))
             surf = pygame.Surface((size * 2, size * 2), pygame.SRCALPHA)
             color = (*particle['color'][:3], alpha)
             pygame.draw.circle(surf, color, (size, size), size)
@@ -584,7 +584,7 @@ def draw_footer():
     
     # Footer text flashes with score color
     if border_flash_timer > 0:
-        alpha = border_flash_timer / 20
+        alpha = border_flash_timer / 90
         if border_flash_color == 'player':
             text_color = (int(COLOR_PLAYER[0] * alpha + 180 * (1 - alpha)),
                           int(COLOR_PLAYER[1] * alpha + 180 * (1 - alpha)),

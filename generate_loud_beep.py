@@ -32,4 +32,4 @@ def generate_loud_beep(filename, duration_ms=100, freq=880, sample_rate=44100):
 
 if __name__ == "__main__":
     # Generate: Source Code/sound/countdown.ogg (Actually WAV content)
-    generate_loud_beep("Source Code/sound/countdown.ogg", duration_ms=150, freq=500)
+    generate_loud_beep("Source Code/sound/countdown.ogg", duration_ms=150, freq=300)
