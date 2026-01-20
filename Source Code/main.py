@@ -463,11 +463,26 @@ def draw_background():
 
 
 def draw_center_line():
-    """Render the center dashed line."""
+    """Render the center dashed line with status glow."""
+    
+    # Determine line color based on game state (win/loss flash)
+    if border_flash_timer > 0:
+        alpha = border_flash_timer / 90
+        if border_flash_color == 'player':
+            line_color = (int(COLOR_PLAYER[0] * alpha + COLOR_LINE[0] * (1 - alpha)),
+                          int(COLOR_PLAYER[1] * alpha + COLOR_LINE[1] * (1 - alpha)),
+                          int(COLOR_PLAYER[2] * alpha + COLOR_LINE[2] * (1 - alpha)))
+        else:
+            line_color = (int(COLOR_OPPONENT[0] * alpha + COLOR_LINE[0] * (1 - alpha)),
+                          int(COLOR_OPPONENT[1] * alpha + COLOR_LINE[1] * (1 - alpha)),
+                          int(COLOR_OPPONENT[2] * alpha + COLOR_LINE[2] * (1 - alpha)))
+    else:
+        line_color = COLOR_LINE
+
     segment, gap = 15, 15
     for y in range(TOP_BORDER, BOTTOM_BORDER, segment + gap):
         end_y = min(y + segment, BOTTOM_BORDER)
-        pygame.draw.line(screen, COLOR_LINE, (SCREEN_WIDTH / 2, y), (SCREEN_WIDTH / 2, end_y), 2)
+        pygame.draw.line(screen, line_color, (SCREEN_WIDTH / 2, y), (SCREEN_WIDTH / 2, end_y), 2)
 
 
 def draw_goal_particles():
