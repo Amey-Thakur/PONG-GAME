@@ -388,17 +388,22 @@ def reset_ball():
 
     elapsed = pygame.time.get_ticks() - score_time
 
-    if elapsed < 1000:
+    # 0 - 1500ms: Celebration (Wait)
+    if elapsed < 1500:
+        return
+
+    # 1500 - 4500ms: Countdown (3, 2, 1)
+    if elapsed < 2500:
         countdown_num = 3
         countdown_text = "3"
-    elif elapsed < 2000:
+    elif elapsed < 3500:
         countdown_num = 2
         countdown_text = "2"
-    elif elapsed < 3000:
+    elif elapsed < 4500:
         countdown_num = 1
         countdown_text = "1"
     else:
-        # Start with slow speed
+        # Start game
         current_ball_speed = BALL_SPEED_START
         ball_velocity = [
             current_ball_speed * random.choice((1, -1)),
