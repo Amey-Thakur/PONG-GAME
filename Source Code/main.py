@@ -95,13 +95,13 @@ def load_sounds():
     
     try:
         paddle_sound = pygame.mixer.Sound("sound/paddle.ogg")
-        paddle_sound.set_volume(0.5)
+        paddle_sound.set_volume(0.4) # Lowered from 0.5
     except:
         pass
     
     try:
         goal_sound = pygame.mixer.Sound("sound/goal.ogg")
-        goal_sound.set_volume(0.7)
+        goal_sound.set_volume(0.6) # Lowered from 0.7
     except:
         pass
     
@@ -406,8 +406,9 @@ def reset_ball():
         last_countdown = countdown_num
         if beep_sound:
             # Increase intensity (volume) as countdown progresses (3 -> 2 -> 1)
-            # 3: 0.33, 2: 0.66, 1: 1.0
-            volume = (4 - countdown_num) / 3.0
+            # 3: 0.5, 2: 0.75, 1: 1.0 (Max volume)
+            # Gameplay sounds are lowered to 0.4/0.6 to make this pop
+            volume = 0.25 + (0.25 * (4 - countdown_num))
             beep_sound.set_volume(volume)
             beep_sound.play()
 
