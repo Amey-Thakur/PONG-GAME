@@ -170,6 +170,8 @@ ai_mistake_timer   = 0                 # Frames remaining for AI to commit to mi
 goal_particles     = []                # Celebration particles on goal
 player_score_glow  = 0                 # Frames for player score glow
 opponent_score_glow = 0                # Frames for opponent score glow
+border_flash_color = None              # Color for border flash (green/red)
+border_flash_timer = 0                 # Frames remaining for border flash
 
 
 # ============================================================================
@@ -255,12 +257,13 @@ def update_ball():
     # Scoring (left/right edges)
     if ball.left <= 0:
         player_score += 1
-        player_score_glow = 20  # Trigger score glow
+        player_score_glow = 20
+        border_flash_color = 'player'
+        border_flash_timer = 20
         score_time = pygame.time.get_ticks()
         goal_flash = 15
         rally_count = 0
         current_ball_speed = BALL_SPEED_START
-        # Spawn celebration particles
         for _ in range(12):
             goal_particles.append({
                 'x': SCREEN_WIDTH / 4, 'y': SCREEN_HEIGHT / 2,
@@ -273,6 +276,8 @@ def update_ball():
     if ball.right >= SCREEN_WIDTH:
         opponent_score += 1
         opponent_score_glow = 20
+        border_flash_color = 'opponent'
+        border_flash_timer = 20
         score_time = pygame.time.get_ticks()
         goal_flash = 15
         rally_count = 0
@@ -410,19 +415,35 @@ def reset_ball():
 # ============================================================================
 
 def draw_background():
-    """Render the game background with goal flash effect."""
-    global goal_flash
+    """Render the game background with goal flash and border color effect."""
+    global goal_flash, border_flash_timer
     
     # Goal flash creates a brief bright pulse
     if goal_flash > 0:
-        flash_intensity = int(30 * (goal_flash / 15))  # Fades from 30 to 0
+        flash_intensity = int(30 * (goal_flash / 15))
         bg_color = (20 + flash_intensity, 20 + flash_intensity, 20 + flash_intensity)
         goal_flash -= 1
     else:
         bg_color = COLOR_BACKGROUND
     
     screen.fill(bg_color)
-    pygame.draw.rect(screen, COLOR_BORDER, (2, 2, SCREEN_WIDTH - 4, SCREEN_HEIGHT - 4), 4)
+    
+    # Border flashes green (player win) or red (opponent win)
+    if border_flash_timer > 0:
+        alpha = border_flash_timer / 20
+        if border_flash_color == 'player':
+            border_color = (int(COLOR_PLAYER[0] * alpha + COLOR_BORDER[0] * (1 - alpha)),
+                            int(COLOR_PLAYER[1] * alpha + COLOR_BORDER[1] * (1 - alpha)),
+                            int(COLOR_PLAYER[2] * alpha + COLOR_BORDER[2] * (1 - alpha)))
+        else:
+            border_color = (int(COLOR_OPPONENT[0] * alpha + COLOR_BORDER[0] * (1 - alpha)),
+                            int(COLOR_OPPONENT[1] * alpha + COLOR_BORDER[1] * (1 - alpha)),
+                            int(COLOR_OPPONENT[2] * alpha + COLOR_BORDER[2] * (1 - alpha)))
+        border_flash_timer -= 1
+    else:
+        border_color = COLOR_BORDER
+    
+    pygame.draw.rect(screen, border_color, (2, 2, SCREEN_WIDTH - 4, SCREEN_HEIGHT - 4), 4)
 
 
 def draw_center_line():
@@ -542,9 +563,24 @@ def draw_rally_counter():
 
 
 def draw_footer():
-    """Render the authorship footer."""
+    """Render the authorship footer with score-based color flash."""
     global footer_rect
-    text = author_font.render("Designed & Developed by Amey & Mega", True, (180, 180, 180))
+    
+    # Footer text flashes with score color
+    if border_flash_timer > 0:
+        alpha = border_flash_timer / 20
+        if border_flash_color == 'player':
+            text_color = (int(COLOR_PLAYER[0] * alpha + 180 * (1 - alpha)),
+                          int(COLOR_PLAYER[1] * alpha + 180 * (1 - alpha)),
+                          int(COLOR_PLAYER[2] * alpha + 180 * (1 - alpha)))
+        else:
+            text_color = (int(COLOR_OPPONENT[0] * alpha + 180 * (1 - alpha)),
+                          int(COLOR_OPPONENT[1] * alpha + 180 * (1 - alpha)),
+                          int(COLOR_OPPONENT[2] * alpha + 180 * (1 - alpha)))
+    else:
+        text_color = (180, 180, 180)
+    
+    text = author_font.render("Designed & Developed by Amey & Mega", True, text_color)
     text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT - 35))
     footer_rect = text_rect.inflate(40, 15)
     pygame.draw.rect(screen, (30, 30, 30), footer_rect, border_radius=15)
@@ -606,9 +642,9 @@ async def main():
             reset_ball()
 
         draw_scores()
-        draw_goal_particles()
         draw_rally_counter()
         draw_footer()
+        draw_goal_particles()  # Particles on top of footer
 
         pygame.display.flip()
         await asyncio.sleep(0)
