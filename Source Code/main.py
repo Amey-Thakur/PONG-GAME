@@ -324,8 +324,15 @@ def update_ball():
 
 
 def update_player():
-    """Update player paddle position."""
-    player.y += player_velocity
+    """Update player paddle position. Supports Keyboard AND Mouse Drag."""
+    # Mouse Interaction: If left click is held, paddle follows mouse
+    if pygame.mouse.get_pressed()[0]:
+        mouse_y = pygame.mouse.get_pos()[1]
+        player.centery = mouse_y
+    else:
+        # Keyboard Interaction
+        player.y += player_velocity
+        
     player.clamp_ip(pygame.Rect(0, TOP_BORDER, SCREEN_WIDTH, BOTTOM_BORDER - TOP_BORDER))
 
 
