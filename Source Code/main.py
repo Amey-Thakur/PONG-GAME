@@ -638,15 +638,15 @@ async def main():
         draw_center_line()
         draw_ball_trail()
         draw_paddles()
-        draw_ball()
-
+        
         if score_time:
             reset_ball()
 
         draw_scores()
         draw_rally_counter()
         draw_footer()
-        draw_goal_particles()  # Particles on top of footer
+        draw_goal_particles()
+        draw_ball()  # Ball drawn last to be on top of footer
 
         pygame.display.flip()
         await asyncio.sleep(0)
