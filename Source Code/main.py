@@ -106,7 +106,7 @@ def load_sounds():
         pass
     
     try:
-        beep_sound = pygame.mixer.Sound("sound/countdown.mp3")
+        beep_sound = pygame.mixer.Sound("sound/countdown.ogg")
         beep_sound.set_volume(0.8)
     except:
         pass
