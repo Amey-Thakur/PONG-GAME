@@ -405,11 +405,8 @@ def reset_ball():
     if countdown_num != last_countdown:
         last_countdown = countdown_num
         if beep_sound:
-            # Increase intensity (volume) as countdown progresses (3 -> 2 -> 1)
-            # 3: 0.5, 2: 0.75, 1: 1.0 (Max volume)
-            # Gameplay sounds are lowered to 0.4/0.6 to make this pop
-            volume = 0.25 + (0.25 * (4 - countdown_num))
-            beep_sound.set_volume(volume)
+            # Play at MAX volume for all counts to ensure it's audible
+            beep_sound.set_volume(1.0)
             beep_sound.play()
 
     text_surface = game_font.render(countdown_text, True, COLOR_WHITE)
