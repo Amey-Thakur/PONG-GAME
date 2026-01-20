@@ -234,8 +234,10 @@ def update_ball():
     Implements progressive difficulty - ball speeds up with each paddle hit.
     """
     global ball_velocity, player_score, opponent_score, score_time
-    global current_ball_speed, rally_count, screen_shake
-    global player_flash, opponent_flash
+    global current_ball_speed, rally_count, goal_flash
+    global player_flash, opponent_flash, goal_particles
+    global player_score_glow, opponent_score_glow
+    global border_flash_color, border_flash_timer
 
     ball.x += ball_velocity[0]
     ball.y += ball_velocity[1]
