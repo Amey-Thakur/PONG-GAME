@@ -44,7 +44,7 @@ jobs:
             #status, #output, pre, .console { display: none !important; visibility: hidden !important; }\
           </style></head>|' dist/index.html
 
-      - name: Upload Pages Artifact
+      - name: Upload Project
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
