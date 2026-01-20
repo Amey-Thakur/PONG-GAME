@@ -107,7 +107,7 @@ def load_sounds():
     
     try:
         beep_sound = pygame.mixer.Sound("sound/countdown.ogg")
-        beep_sound.set_volume(0.8)
+        beep_sound.set_volume(0.5)
     except:
         pass
 
@@ -381,13 +381,13 @@ def reset_ball():
 
     elapsed = pygame.time.get_ticks() - score_time
 
-    if elapsed < 700:
+    if elapsed < 1000:
         countdown_num = 3
         countdown_text = "3"
-    elif elapsed < 1400:
+    elif elapsed < 2000:
         countdown_num = 2
         countdown_text = "2"
-    elif elapsed < 2100:
+    elif elapsed < 3000:
         countdown_num = 1
         countdown_text = "1"
     else:
@@ -405,6 +405,10 @@ def reset_ball():
     if countdown_num != last_countdown:
         last_countdown = countdown_num
         if beep_sound:
+            # Increase intensity (volume) as countdown progresses (3 -> 2 -> 1)
+            # 3: 0.33, 2: 0.66, 1: 1.0
+            volume = (4 - countdown_num) / 3.0
+            beep_sound.set_volume(volume)
             beep_sound.play()
 
     text_surface = game_font.render(countdown_text, True, COLOR_WHITE)
