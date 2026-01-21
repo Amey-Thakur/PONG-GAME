@@ -162,6 +162,11 @@ pygbag "Source Code"
 ```
 > Access the simulation at `http://localhost:8000` once the server starts.
 
+> [!WARNING]
+> **Local Execution**
+>
+> For local development, ensure that the `pygame` and `asyncio` libraries are correctly installed. Running the project locally may require `pygbag` for the full web-simulation experience.
+
 ---
 
 <!-- USAGE -->
