@@ -134,13 +134,40 @@ PONG-GAME/
 ## Quick Start
 
 ### 1. Prerequisites
-- **Browser**: Any modern WebAssembly-compliant browser (Chrome, Firefox, Edge, Safari).
-- **Python (Optional)**: Python 3.11+ (for local development).
+Ensure you have the following installed on your system:
+- **Python 3.11+**: Required for runtime execution. [Download Python](https://www.python.org/downloads/)
+- **Git**: For version control and cloning. [Download Git](https://git-scm.com/downloads)
 
-> [!WARNING]
-> **Local Execution**
->
-> For local development, ensure that the `pygame` and `asyncio` libraries are correctly installed. Running the project locally may require `pygbag` for the full web-simulation experience.
+### 2. Installation
+Clone the repository and install the necessary dependencies:
+
+```bash
+# Clone the repository
+git clone https://github.com/Amey-Thakur/PONG-GAME.git
+cd PONG-GAME
+
+# Install Pygame (Community Edition recommended for best performance)
+pip install pygame-ce
+
+# (Optional) Install Pygbag if you wish to build for the web
+pip install pygbag
+```
+
+### 3. Execution Modes
+You can launch the application in two distinct environments:
+
+**A. Native Desktop (Recommended)**
+Run the game directly as a high-performance desktop application:
+```bash
+python "Source Code/main.py"
+```
+
+**B. Web Simulation (Pygbag)**
+Simulate the WebAssembly environment locally to test browser compatibility:
+```bash
+pygbag "Source Code"
+```
+> Access the simulation at `http://localhost:8000` once the server starts.
 
 ---
 
