@@ -79,7 +79,7 @@ The simulation is governed by strict **computational design patterns** ensuring 
 
 > [!NOTE]
 > ### Interactive Polish: The Velocity Singularity
-> We have engineered a **Physics-Driven State Manager** that calibrates ball velocity across multiple vectors to simulate momentum transfer. The visual language focuses on the minimalist "High-Contrast" aesthetic of early computing, ensuring maximum focus on the interactive trajectory. Complementing this experience, the application includes a high-fidelity **Digital Signature**, seamlessly integrated into the footer and signed by **Amey & Mega**.
+> We have engineered a **Physics-Driven State Manager** that calibrates ball velocity across multiple vectors to simulate momentum transfer. The visual language focuses on the minimalist "High-Contrast" aesthetic of early computing, ensuring maximum focus on the interactive trajectory.
 
 ### Tech Stack
 - **Languages**: Python 3.11
