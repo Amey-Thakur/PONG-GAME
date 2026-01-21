@@ -143,12 +143,18 @@ PONG-GAME/
 > For local development, ensure that the `pygame` and `asyncio` libraries are correctly installed. Running the project locally may require `pygbag` for the full web-simulation experience.
 
 ### 2. Installation
-Clone the repository and install the necessary dependencies in one go:
+Clone the repository and install the necessary dependencies:
 
 ```bash
+# Clone the repository
 git clone https://github.com/Amey-Thakur/PONG-GAME.git
 cd PONG-GAME
-pip install pygame-ce pygbag
+
+# Install Pygame (Community Edition recommended for best performance)
+pip install pygame-ce
+
+# (Optional) Install Pygbag if you wish to build for the web
+pip install pygbag
 ```
 
 ### 3. Execution Modes
