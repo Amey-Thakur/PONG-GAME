@@ -134,23 +134,16 @@ PONG-GAME/
 ## Quick Start
 
 ### 1. Prerequisites
-Ensure you have the following installed on your system:
 - **Python 3.11+**: Required for runtime execution. [Download Python](https://www.python.org/downloads/)
 - **Git**: For version control and cloning. [Download Git](https://git-scm.com/downloads)
 
 ### 2. Installation
-Clone the repository and install the necessary dependencies:
+Clone the repository and install the necessary dependencies in one go:
 
 ```bash
-# Clone the repository
 git clone https://github.com/Amey-Thakur/PONG-GAME.git
 cd PONG-GAME
-
-# Install Pygame (Community Edition recommended for best performance)
-pip install pygame-ce
-
-# (Optional) Install Pygbag if you wish to build for the web
-pip install pygbag
+pip install pygame-ce pygbag
 ```
 
 ### 3. Execution Modes
