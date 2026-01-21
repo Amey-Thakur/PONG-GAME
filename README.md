@@ -102,6 +102,10 @@ PONG-GAME/
 ├── docs/                            # Technical Documentation
 │   └── SPECIFICATION.md             # Architecture & Design Specification
 │
+├── Mega/                            # Archival Attribution Assets
+│   ├── Filly.jpg                    # Companion (Filly)
+│   └── Mega.png                     # Author Profile Image (Mega Satish)
+│
 ├── Source Code/                     # Primary Application Layer
 │   ├── build/                       # WebAssembly Build Artifacts
 │   ├── sound/                       # Audio Assets (WAV/OGG)
