@@ -99,13 +99,25 @@ PONG-GAME/
 │   └── workflows/
 │       └── main.yml                 # CI/CD Pipeline (Pygbag Build & Deploy)
 │
+├── docs/                            # Technical Documentation
+│   └── SPECIFICATION.md             # Architecture & Design Specification
+│
 ├── Source Code/                     # Primary Application Layer
-│   ├── sound/                       # Audio Assets (WAV)
+│   ├── build/                       # WebAssembly Build Artifacts
+│   ├── sound/                       # Audio Assets (WAV/OGG)
+│   ├── default.tmpl                 # Pygbag HTML Template
+│   ├── favicon.png                  # System Identity Icon
+│   ├── icon.png                     # Application Icon
 │   └── main.py                      # Core Game Logic (Asynchronous Entry Point)
 │
+├── .gitattributes                   # Git configuration
+├── .gitignore                       # Repository Filters
+├── CITATION.cff                     # Scholarly Citation Metadata
+├── codemeta.json                    # Machine-Readable Project Metadata
+├── favicon.png                      # Root Identity Icon
 ├── LICENSE                          # MIT License Terms
 ├── README.md                        # Comprehensive Scholarly Entrance
-└── .gitignore                       # Repository Filters
+└── SECURITY.md                      # Security Policy & Protocol
 ```
 
 ---

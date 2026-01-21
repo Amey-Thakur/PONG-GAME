@@ -1,0 +1,45 @@
+{
+    "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+    "@type": "SoftwareSourceCode",
+    "name": "PONG-GAME",
+    "description": "A high-fidelity recreation of the foundational 1972 arcade classic, engineered with Python and optimized for seamless web execution.",
+    "identifier": "PONG-GAME",
+    "license": "https://spdx.org/licenses/MIT.html",
+    "programmingLanguage": [
+        "Python",
+        "WebAssembly"
+    ],
+    "author": [
+        {
+            "@type": "Person",
+            "givenName": "Amey",
+            "familyName": "Thakur",
+            "id": "https://orcid.org/0000-0001-5644-1575",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "Terna Engineering College"
+            }
+        },
+        {
+            "@type": "Person",
+            "givenName": "Mega",
+            "familyName": "Satish",
+            "id": "https://orcid.org/0000-0002-1430-4961",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "Terna Engineering College"
+            }
+        }
+    ],
+    "dateReleased": "2022-01-20",
+    "codeRepository": "https://github.com/Amey-Thakur/PONG-GAME",
+    "developmentStatus": "complete",
+    "applicationCategory": "Arcade Game / Simulation",
+    "keywords": [
+        "Pong",
+        "Arcade",
+        "Python",
+        "Pygame",
+        "Terna Engineering College"
+    ]
+}
