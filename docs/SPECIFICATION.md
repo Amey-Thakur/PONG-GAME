@@ -44,4 +44,4 @@ graph TD
 
 ---
 
-*Technical Specification | Human Machine Interaction | Version 1.0*
+*Technical Specification | Python | Version 1.0*
