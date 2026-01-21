@@ -49,8 +49,8 @@
 
 **Pong Game** is a tabula-arcade simulation designed to demonstrate core game engine mechanics including collision physics, vector-based velocity, and AI tracking logic. The application serves as a digital study into early interactive system architecture, brought into a modern context via WebAssembly.
 
-### HMI Principles
-The development of this interface was guided by core **Human-Machine Interaction** paradigms:
+### Python Principles
+The development of this interface was guided by core **Python Development** paradigms:
 *   **Consistency**: The interface strictly adheres to the original 1972 spatial layout, exploiting the user's existing mental model of arcade physics to ensure intuitive interaction.
 *   **Direct Manipulation**: Paddle controls provide instantaneous response to input, creating a seamless loop between user intent and system action, critical for high-latency feedback environments.
 
@@ -144,10 +144,10 @@ PONG-GAME/
 This repository is openly shared to support learning and knowledge exchange across the academic community.
 
 **For Students**  
-Use this project as reference material for understanding game engine logic, asynchronous programming in Python, and Human Machine Interaction principles.
+Use this project as reference material for understanding game engine logic, asynchronous programming in Python, and Python principles.
 
 **For Educators**  
-This project may serve as a practical lab example or supplementary teaching resource for Human Machine Interaction and Human Machine Interaction Laboratory courses (`CSC801` & `CSL801`).
+This project may serve as a practical lab example or supplementary teaching resource for Python Programming and Game Development Laboratory courses (`CSC801` & `CSL801`).
 
 ---
 
@@ -169,7 +169,7 @@ Copyright © 2022 Amey Thakur & Mega Satish
 **Academic Journey**: Bachelor of Engineering in Computer Engineering (2018-2022)  
 **Institution**: [Terna Engineering College](https://ternaengg.ac.in/), Navi Mumbai  
 
-This project features **The Pong Game**, developed as a **Human Machine Interaction** project during the **8th Semester Computer Engineering** curriculum.
+This project features **The Pong Game**, developed as a **Python** project during the **8th Semester Computer Engineering** curriculum.
 
 ---
 
@@ -181,7 +181,7 @@ This project features **The Pong Game**, developed as a **Human Machine Interact
 
   <br>
 
-  🔬 **[Human Machine Interaction Laboratory](https://github.com/Amey-Thakur/HUMAN-MACHINE-INTERACTION-AND-HUMAN-MACHINE-INTERACTION-LAB)** &nbsp; · &nbsp; 🏓 **[PONG-GAME](https://amey-thakur.github.io/PONG-GAME)**
+  🔬 **[Python Programming Laboratory](https://github.com/Amey-Thakur/HUMAN-MACHINE-INTERACTION-AND-HUMAN-MACHINE-INTERACTION-LAB)** &nbsp; · &nbsp; 🏓 **[PONG-GAME](https://amey-thakur.github.io/PONG-GAME)**
 
   ---
 
