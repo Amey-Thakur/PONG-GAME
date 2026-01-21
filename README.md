@@ -109,6 +109,13 @@ PONG-GAME/
 │   ├── Filly.jpg                    # Companion (Filly)
 │   └── Mega.png                     # Author Profile Image (Mega Satish)
 │
+├── screenshots/                     # Sequential Visual Walkthrough
+│   ├── 01-loading-screen.png        # WebAssembly Initialization
+│   ├── 02-game-start.png            # Initial Game State
+│   ├── 03-rally-mechanics.png       # Physics & Difficulty Scaling
+│   ├── 04-physics-dynamics.png      # Real-time Collision Tracking
+│   └── 05-high-intensity.png        # Peak Velocity State
+│
 ├── Source Code/                     # Primary Application Layer
 │   ├── build/                       # WebAssembly Build Artifacts
 │   ├── sound/                       # Audio Assets (WAV/OGG)
@@ -134,9 +141,22 @@ PONG-GAME/
 ## Results
 
 <div align="center">
-  <b>High-Fidelity Project Poster</b>
+  <b>Visual Walkthrough: System Architecture & User Flow</b>
   <br><br>
-  <img src="screenshots/01-poster.jpg" alt="Pong Game Poster" width="80%">
+  <img src="screenshots/01-loading-screen.png" alt="Loading Screen" width="80%">
+  <br><i>Fig 1: Asynchronous WebAssembly Initialization via Pygbag.</i>
+  <br><br>
+  <img src="screenshots/02-game-start.png" alt="Game Start" width="80%">
+  <br><i>Fig 2: Initial Game State with minimalist high-contrast aesthetics.</i>
+  <br><br>
+  <img src="screenshots/03-rally-mechanics.png" alt="Rally Mechanics" width="80%">
+  <br><i>Fig 3: Progressive Difficulty Scaling and rally tracking.</i>
+  <br><br>
+  <img src="screenshots/04-physics-dynamics.png" alt="Physics Dynamics" width="80%">
+  <br><i>Fig 4: Real-time collision dynamics and velocity vectoring.</i>
+  <br><br>
+  <img src="screenshots/05-high-intensity.png" alt="High Intensity" width="80%">
+  <br><i>Fig 5: Peak Velocity State with active particle feedback.</i>
 </div>
 
 ---
