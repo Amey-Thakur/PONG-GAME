@@ -235,8 +235,6 @@ This project features **The Pong Game**, a high-performance reconstruction of th
 
 Grateful acknowledgment to [**Mega Satish**](https://github.com/msatmod) for her exceptional collaboration and scholarly partnership during the development of this game design project. Her constant support, technical clarity, and dedication to software quality were instrumental in achieving the system's functional objectives. Learning alongside her was a transformative experience; her thoughtful approach to problem-solving and steady encouragement turned complex requirements into meaningful learning moments. This work reflects the growth and insights gained from our side-by-side academic journey. Thank you, Mega, for everything you shared and taught along the way.
 
-Grateful acknowledgment to the mentors and peers whose technical insights and support were instrumental throughout this development process. Their expertise helped refine the understanding of interactive system design.
-
 Special thanks to the **mentors and peers** whose encouragement, discussions, and support contributed meaningfully to this learning experience.
 
 ---
