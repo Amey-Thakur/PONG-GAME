@@ -68,21 +68,23 @@ The simulation is governed by strict **computational design patterns** ensuring 
 
 | Feature | Description |
 |---------|-------------|
-| **Elastic Physics** | High-precision collision detection using **Rect intersection logic** for authentic deflection. |
-| **Reactive AI** | An intelligent opponent paddle engineered with **velocity-tracking heuristics** for a scalable challenge. |
-| **Binaural Audio** | Event-driven auditory feedback system synchronized with **real-time physics triggers**. |
-| **Wasm Stack** | Efficient **WebAssembly compilation** via Pygbag, enabling native browser execution without plugins. |
-| **Binary Scoring** | Integrated score management system with visual persistence and round-start countdowns. |
-| **Adaptive Logic** | Asynchronous game loop architecture ensuring **non-blocking browser execution** and stability. |
+| **Physics Engine** | High-precision collision detection using **Rect intersection logic** for authentic deflection. |
+| **Adaptive AI** | Opponent logic with **velocity-tracking heuristics** and organic error rates. |
+| **Spatial Audio** | Event-driven sound engine using **OGG assets** for broad browser compatibility. |
+| **Wasm Architecture** | Efficient **WebAssembly compilation** via Pygbag for native web execution. |
+| **Game Loop** | Asynchronous architecture ensuring **60 FPS stability** on web clients. |
+| **Visual Feedback** | **Dynamic Particle Systems** that trigger on goal events for sensory reward. |
+| **State Feedback** | **Velocity-Based Trails** and screen flash effects for high-impact game feel. |
+| **Social Persistence** | **Interactive Footer Integration** bridging the game to the source repository. |
 
 > [!NOTE]
 > ### Interactive Polish: The Velocity Singularity
-> We have engineered a **physics-driven state manager** that calibrates ball velocity across three distinct axes to simulate atmospheric drag and momentum transfer. During the initial countdown, the interface provides a **Visual Prep-State**, priming the user's cognitive reaction time before the primary game loop resumes. The visual language focuses on the minimalist "High-Contrast" aesthetic of early computing, ensuring maximum focus on the interactive trajectory. Complementing this experience, the application includes a high-fidelity performance summary, with a codebase digitally signed by **Amey & Mega**.
+> We have engineered a **Physics-Driven State Manager** that calibrates ball velocity across multiple vectors to simulate momentum transfer. The visual language focuses on the minimalist "High-Contrast" aesthetic of early computing, ensuring maximum focus on the interactive trajectory. Complementing this experience, the application includes a high-fidelity **Digital Signature**, seamlessly integrated into the footer and signed by **Amey & Mega**.
 
 ### Tech Stack
 - **Languages**: Python 3.11
 - **Logic**: **Pygame Engine** (Asynchronous Loop & Physics Engine)
-- **Imaging**: **freesansbold.ttf** (Anti-aliased Raster Typography)
+- **Imaging**: **Procedural Graphics** (Custom Particle & Trail Systems)
 - **UI System**: Premium Retro Graphics (Custom Python Canvas)
 - **Deployment**: GitHub Actions (Pygbag WebAssembly Pipeline)
 - **Hosting**: GitHub Pages
