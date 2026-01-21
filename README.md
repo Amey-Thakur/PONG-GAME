@@ -175,17 +175,21 @@ pygbag "Source Code"
 
 ---
 
-<!-- USAGE -->
-<a name="usage-guidelines"></a>
+<!-- =========================================================================================
+                                     USAGE SECTION
+     ========================================================================================= -->
 ## Usage Guidelines
 
 This repository is openly shared to support learning and knowledge exchange across the academic community.
 
 **For Students**  
-Use this project as reference material for understanding game engine logic, asynchronous programming in Python, and Python principles.
+Use this project as reference material for understanding interactive system design, game development patterns, and Python principles. The source code is available for study to facilitate self-paced learning and exploration of user-centric design patterns.
 
 **For Educators**  
-This project may serve as a practical lab example or supplementary teaching resource for Python Programming and Game Development Laboratory courses (`CSC801` & `CSL801`).
+This project may serve as a practical lab example or supplementary teaching resource for Game Development and Python Programming courses. Attribution is appreciated when utilizing content.
+
+**For Researchers**  
+The documentation and design approach may provide insights into academic project structuring and interactive application development.
 
 ---
 
