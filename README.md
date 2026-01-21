@@ -18,7 +18,7 @@
 
 <div align="center">
 
-  [Authors](#authors) &nbsp;·&nbsp; [Overview](#overview) &nbsp;·&nbsp; [Features](#features) &nbsp;·&nbsp; [Structure](#project-structure) &nbsp;·&nbsp; [Results](#results) &nbsp;·&nbsp; [Quick Start](#quick-start) &nbsp;·&nbsp; [Usage Guidelines](#usage-guidelines) &nbsp;·&nbsp; [License](#license) &nbsp;·&nbsp; [About](#about-this-repository) &nbsp;·&nbsp; [Acknowledgments](#acknowledgments)
+  [Authors](#authors) &nbsp;·&nbsp; [Overview](#overview) &nbsp;·&nbsp; [Features](#features) &nbsp;·&nbsp; [Structure](#project-structure) &nbsp;·&nbsp; [Walkthrough](#results) &nbsp;·&nbsp; [Quick Start](#quick-start) &nbsp;·&nbsp; [Usage Guidelines](#usage-guidelines) &nbsp;·&nbsp; [License](#license) &nbsp;·&nbsp; [About](#about-this-repository) &nbsp;·&nbsp; [Acknowledgments](#acknowledgments)
 
 </div>
 
@@ -109,7 +109,7 @@ PONG-GAME/
 │   ├── Filly.jpg                    # Companion (Filly)
 │   └── Mega.png                     # Author Profile Image (Mega Satish)
 │
-├── screenshots/                     # Sequential Visual Walkthrough
+├── screenshots/                     # Project Visualization Gallery
 │   ├── 01-loading-screen.png        # WebAssembly Initialization
 │   ├── 02-game-start.png            # Initial Game State
 │   ├── 03-rally-mechanics.png       # Physics & Difficulty Scaling
@@ -138,25 +138,42 @@ PONG-GAME/
 
 <!-- RESULTS -->
 <a name="results"></a>
-## Results
+## Visual Walkthrough
 
 <div align="center">
-  <b>Visual Walkthrough: System Architecture & User Flow</b>
+  <b>Main Landing: System Initialization</b>
+  <br>
+  <i>Asynchronous WebAssembly environment setup via Pygbag.</i>
   <br><br>
-  <img src="screenshots/01-loading-screen.png" alt="Loading Screen" width="80%">
-  <br><i>Fig 1: Asynchronous WebAssembly Initialization via Pygbag.</i>
+  <img src="screenshots/01-loading-screen.png" alt="Loading Screen" width="90%">
+  <br><br><br>
+
+  <b>Gameplay: 2D Physics Interface</b>
+  <br>
+  <i>High-contrast rendering with minimalist retro aesthetics.</i>
   <br><br>
-  <img src="screenshots/02-game-start.png" alt="Game Start" width="80%">
-  <br><i>Fig 2: Initial Game State with minimalist high-contrast aesthetics.</i>
+  <img src="screenshots/02-game-start.png" alt="Game Start" width="90%">
+  <br><br><br>
+
+  <b>Progressive Challenge: Rally Dynamics</b>
+  <br>
+  <i>Dynamic velocity multiplier increasing challenge with every rally.</i>
   <br><br>
-  <img src="screenshots/03-rally-mechanics.png" alt="Rally Mechanics" width="80%">
-  <br><i>Fig 3: Progressive Difficulty Scaling and rally tracking.</i>
+  <img src="screenshots/03-rally-mechanics.png" alt="Rally Mechanics" width="90%">
+  <br><br><br>
+
+  <b>Trajectory Analysis: Collision Logic</b>
+  <br>
+  <i>Real-time physics calculation for precise deflection vectors.</i>
   <br><br>
-  <img src="screenshots/04-physics-dynamics.png" alt="Physics Dynamics" width="80%">
-  <br><i>Fig 4: Real-time collision dynamics and velocity vectoring.</i>
+  <img src="screenshots/04-physics-dynamics.png" alt="Physics Dynamics" width="90%">
+  <br><br><br>
+
+  <b>Visual Feedback: Multi-modal Particles</b>
+  <br>
+  <i>State-driven particle systems triggered on goal events.</i>
   <br><br>
-  <img src="screenshots/05-high-intensity.png" alt="High Intensity" width="80%">
-  <br><i>Fig 5: Peak Velocity State with active particle feedback.</i>
+  <img src="screenshots/05-high-intensity.png" alt="High Intensity" width="90%">
 </div>
 
 ---
@@ -263,7 +280,7 @@ Special thanks to the **mentors and peers** whose encouragement, discussions, an
 
   [↑ Back to Top](#readme-top)
 
-  [Authors](#authors) &nbsp;·&nbsp; [Overview](#overview) &nbsp;·&nbsp; [Features](#features) &nbsp;·&nbsp; [Structure](#project-structure) &nbsp;·&nbsp; [Results](#results) &nbsp;·&nbsp; [Quick Start](#quick-start) &nbsp;·&nbsp; [Usage Guidelines](#usage-guidelines) &nbsp;·&nbsp; [License](#license) &nbsp;·&nbsp; [About](#about-this-repository) &nbsp;·&nbsp; [Acknowledgments](#acknowledgments)
+  [Authors](#authors) &nbsp;·&nbsp; [Overview](#overview) &nbsp;·&nbsp; [Features](#features) &nbsp;·&nbsp; [Structure](#project-structure) &nbsp;·&nbsp; [Walkthrough](#results) &nbsp;·&nbsp; [Quick Start](#quick-start) &nbsp;·&nbsp; [Usage Guidelines](#usage-guidelines) &nbsp;·&nbsp; [License](#license) &nbsp;·&nbsp; [About](#about-this-repository) &nbsp;·&nbsp; [Acknowledgments](#acknowledgments)
 
   <br>
 
