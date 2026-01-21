@@ -5,7 +5,7 @@
 
   [![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey)](LICENSE)
   ![Status](https://img.shields.io/badge/Status-Completed-success)
-  [![Technology](https://img.shields.io/badge/Technology-Python%20%7C%20Pygame-purple)](https://github.com/Amey-Thakur/PONG-GAME)
+  [![Technology](https://img.shields.io/badge/Technology-Python%20%7C%20Pygame-blueviolet)](https://github.com/Amey-Thakur/PONG-GAME)
   [![Developed by Amey Thakur and Mega Satish](https://img.shields.io/badge/Developed%20by-Amey%20Thakur%20%26%20Mega%20Satish-blue.svg)](https://github.com/Amey-Thakur/PONG-GAME)
 
   A modern **Python** + **Pygame** reconstruction of the original 1972 Pong, built with accurate collision physics and performance-focused game loops.
