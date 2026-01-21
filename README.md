@@ -8,7 +8,7 @@
   [![Technology](https://img.shields.io/badge/Technology-Python%20%7C%20Pygame-blue)](https://github.com/Amey-Thakur/PONG-GAME)
   [![Developed by Amey Thakur and Mega Satish](https://img.shields.io/badge/Developed%20by-Amey%20Thakur%20%26%20Mega%20Satish-blue.svg)](https://github.com/Amey-Thakur/PONG-GAME)
 
-  A high-performance **Python** and **Pygame** reconstruction of the 1972 Pong arcade classic, optimized for seamless web execution and precise physics simulation.
+  A modern **Python** + **Pygame** reconstruction of the original 1972 Pong, built with accurate collision physics and performance-focused game loops.
 
   **[Source Code](Source%20Code/)** &nbsp;·&nbsp; **[Technical Specification](Source%20Code/main.py)** &nbsp;·&nbsp; **[Live Demo](https://amey-thakur.github.io/PONG-GAME/)**
 
