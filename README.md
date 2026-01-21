@@ -47,17 +47,18 @@
 <a name="overview"></a>
 ## Overview
 
-**Pong Game** is a tabula-arcade simulation designed to demonstrate core game engine mechanics including collision physics, vector-based velocity, and AI tracking logic. The application serves as a digital study into early interactive system architecture, brought into a modern context via WebAssembly.
+**Pong Game** is a precision-engineered simulation of the 1972 arcade foundational, rebuilt using **Python** and **Pygame** with a focus on engine adaptability and web performance. By leveraging **WebAssembly** for ubiquitous deployment, this project bridges the gap between retro systems and modern browser capabilities, offering a responsive, mathematically accurate study of collision dynamics and game loop architecture.
 
-### Python Principles
-The development of this interface was guided by core **Python Development** paradigms:
-*   **Consistency**: The interface strictly adheres to the original 1972 spatial layout, exploiting the user's existing mental model of arcade physics to ensure intuitive interaction.
-*   **Direct Manipulation**: Paddle controls provide instantaneous response to input, creating a seamless loop between user intent and system action, critical for high-latency feedback environments.
+### core mechanics
+The simulation is governed by strict **computational design patterns** ensuring fidelity and responsiveness:
+*   **Progressive Physics**: The engine utilizes a linear velocity multiplier, incrementally increasing ball speed with every successful rally to create an evolving challenge curve.
+*   **Heuristic AI**: Unlike static opponents, the CPU logic integrates a **probabilistic error function** that dynamically refines its accuracy over time, simulating an organic learning curve.
+*   **Direct Manipulation**: Input handling supports both continuous key-state and coordinate-based (mouse) control schemes, ensuring **zero-latency** paddle response critical for high-speed gameplay.
 
 > [!TIP]
-> **Feedback Loop Dynamics**
+> **Sensory Feedback Integration**
 >
-> The design utilizes high-contrast visual elements and distinct auditory triggers (`sfx_point`, `sfx_swooshing`) to invoke strong **Feedback Loops**. By providing immediate sensory confirmation for ball-paddle impacts and score events, the interface creates a robust **Visibility of System Status**, ensuring the user remains accurately oriented within the game state at all times.
+> To maximize state clarity, the engine employs a **multi-modal feedback system**. **Particle emitters** detonate on scoring events, and **dynamic trails** visualize the ball's velocity vector, strictly coupling visual flair with game state changes. This ensures the user's mental model is constantly synchronized with the underlying physics simulation without reliance on intrusive HUD elements.
 
 ---
 
