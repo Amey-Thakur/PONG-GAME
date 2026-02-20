@@ -222,6 +222,13 @@ pygbag "Source Code"
 ```
 > Access the simulation at `http://localhost:8000` once the server starts.
 
+> [!TIP]
+> **Cross-Platform Web Deployment | WebAssembly Reconstruction**
+> 
+> Experience this high-performance **Python** game engine running natively in your browser via **WebAssembly (Wasm)**. This asynchronous reconstruction leverages **Pygbag** to deliver a premium retro-arcade experience with mathematically accurate collision dynamics and zero-latency **Human-Machine Interaction**.
+>
+> [**Launch Live Demo**](https://amey-thakur.github.io/PONG-GAME/)
+
 ---
 
 <!-- =========================================================================================
