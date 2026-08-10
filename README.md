@@ -1,6 +1,5 @@
 <div align="center">
 
-  <a name="readme-top"></a>
   # Pong Game
 
   [![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey)](LICENSE)
@@ -49,7 +48,16 @@
 
 **Pong Game** is a precision-engineered simulation of the 1972 arcade foundational, rebuilt using **Python** and **Pygame** with a focus on engine adaptability and web performance. By leveraging **WebAssembly** for ubiquitous deployment, this project bridges the gap between retro systems and modern browser capabilities, offering a responsive, mathematically accurate study of collision dynamics and game loop architecture.
 
-### core mechanics
+### Resources
+
+| # | Resource | Description |
+|---|---|---|
+| 1 | [**Live Demo**](https://amey-thakur.github.io/PONG-GAME/) | The game as published |
+| 2 | [**Source Code**](Source%20Code/) | The engine, icons and sound |
+| 3 | [**Technical Specification**](docs/SPECIFICATION.md) | Design and implementation notes |
+| 4 | [**Screenshots**](screenshots/) | The game as it renders |
+
+### Core Mechanics
 The simulation is governed by strict **computational design patterns** ensuring fidelity and responsiveness:
 *   **Progressive Physics**: The engine utilizes a linear velocity multiplier, incrementally increasing ball speed with every successful rally to create an evolving challenge curve.
 *   **Heuristic AI**: Unlike static opponents, the CPU logic integrates a **probabilistic error function** that dynamically refines its accuracy over time, simulating an organic learning curve.
@@ -285,7 +293,7 @@ Special thanks to the **mentors and peers** whose encouragement, discussions, an
 
 <div align="center">
 
-  [↑ Back to Top](#readme-top)
+  [↑ Back to Top](#pong-game)
 
   [Authors](#authors) &nbsp;·&nbsp; [Overview](#overview) &nbsp;·&nbsp; [Features](#features) &nbsp;·&nbsp; [Structure](#project-structure) &nbsp;·&nbsp; [Results](#results) &nbsp;·&nbsp; [Quick Start](#quick-start) &nbsp;·&nbsp; [Usage Guidelines](#usage-guidelines) &nbsp;·&nbsp; [License](#license) &nbsp;·&nbsp; [About](#about-this-repository) &nbsp;·&nbsp; [Acknowledgments](#acknowledgments)
 
