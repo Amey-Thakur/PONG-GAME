@@ -44,6 +44,10 @@ jobs:
             #status, #output, pre, .console { display: none !important; visibility: hidden !important; }\
           </style></head>|' dist/index.html
 
+      - name: Apply SEO Metadata
+        run: |
+          python .github/seo.py
+
       - name: Upload Project
         uses: actions/upload-pages-artifact@v3
         with:
