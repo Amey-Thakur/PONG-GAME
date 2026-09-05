@@ -1,0 +1,34 @@
+# Pong Game
+
+> A modern Python + Pygame reconstruction of the original 1972 Pong, built
+> with accurate collision physics and performance-focused game loops.
+
+Author: Amey Thakur, ORCID 0000-0001-5644-1575
+Co-author: Mega Satish, ORCID 0000-0002-1844-9557
+Institution: Terna Engineering College, University of Mumbai
+Programme: B.E. Computer Engineering, Fourth Year, Semester VIII
+Licence: CC BY 4.0, attribution required
+Repository created: 5 July 2021
+
+## What is in this repository
+
+- Mega, 6 files
+- Source Code, 8 files
+- docs, 1 file
+- screenshots, 6 files
+- favicon.png
+- generate_loud_beep.py
+
+## Subject terms
+
+arcade-game, computer-engineering, computer-science, engineering, game,
+game-development, physics-engine, pong, pong-game, pygame, pygame-games,
+pygbag, python, python-game, university-of-mumbai
+
+## Where this sits
+
+- This repository: https://github.com/Amey-Thakur/PONG-GAME
+- Degree index, every subject and project: https://github.com/Amey-Thakur/COMPUTER-ENGINEERING
+- Project page: https://amey-thakur.github.io/PONG-GAME/
+- Author: https://github.com/Amey-Thakur
+- Research notes and reflections: https://amey-thakur.github.io/

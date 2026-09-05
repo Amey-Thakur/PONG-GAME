@@ -31,8 +31,10 @@
             }
         }
     ],
+    "dateCreated": "2021-07-05",
     "dateReleased": "2021-07-05",
     "codeRepository": "https://github.com/Amey-Thakur/PONG-GAME",
+    "isPartOf": "https://github.com/Amey-Thakur/COMPUTER-ENGINEERING",
     "developmentStatus": "complete",
     "applicationCategory": "Arcade Game / Simulation",
     "keywords": [
@@ -40,6 +42,32 @@
         "Arcade",
         "Python",
         "Pygame",
-        "Terna Engineering College"
-    ]
+        "Terna Engineering College",
+        "Arcade Game",
+        "Computer Engineering",
+        "Computer Science",
+        "Engineering",
+        "Game",
+        "Game Development",
+        "Physics Engine",
+        "Pong Game",
+        "Pygame Games",
+        "Pygbag",
+        "Python Game",
+        "University Of Mumbai",
+        "University of Mumbai",
+        "Mumbai University",
+        "Navi Mumbai",
+        "India",
+        "B.E. Computer Engineering",
+        "Semester VIII",
+        "Amey Thakur",
+        "amey",
+        "ameythakur",
+        "amey-thakur",
+        "ameyarc",
+        "Mega Satish",
+        "megasatish"
+    ],
+    "url": "https://amey-thakur.github.io/PONG-GAME/"
 }
